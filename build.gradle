@@ -1,12 +1,17 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
     //id 'org.springframework.boot' version '3.3.0' // 适当的版本
     //id 'io.spring.dependency-management' version '1.1.7' // 适当的版本
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
     id 'java'
     id 'maven-publish'
     id 'application'
 }
+def baseName = "core"
+def mainC = "dev.anye.core.Main"
 group = 'dev.anye'
-version = '25.05.1901'
+version = '25.05.2002'
 archivesBaseName = 'core'
 sourceCompatibility = '21' // 适当的 Java 版本
 repositories {
@@ -19,7 +24,52 @@ dependencies {
     implementation("org.graalvm.polyglot:polyglot:24.2.1")
     implementation("org.graalvm.polyglot:js:24.2.1")
     //implementation("org.graalvm.compiler:compiler:24.2.1")
+
+    shadow("org.graalvm.polyglot:polyglot:24.2.1")
+    shadow("org.graalvm.polyglot:js:24.2.1")
 }
+
+/*
+tasks.register('customJar', Jar) {
+    archiveBaseName = 'custom-jar-name'
+    from(configurations.runtimeClasspath) {
+    }
+
+}
+        archiveAppendix.set("all")
+*/
+
+tasks{
+    shadowJar {
+        archiveBaseName.set(baseName)
+        archiveClassifier.set("mc")
+        manifest {
+            attributes("Main-Class" : mainC)
+        }
+        mergeServiceFiles()
+        configurations = [project.configurations.shadow]
+    }
+}
+
+
+
+tasks.register('shadowJarAll', ShadowJar) {
+    archiveBaseName.set(baseName)
+    archiveClassifier.set("all")
+    manifest {
+        attributes("Main-Class" : mainC)
+    }
+    mergeServiceFiles()
+    configurations = [project.configurations.runtimeClasspath]
+}
+/*
+tasks {
+
+}
+
+
+ */
+
 //./gradlew clean build publishToMavenLocal
 publishing {
     publications {
@@ -34,6 +84,7 @@ publishing {
         mavenLocal()
     }
 }
+
 /*
 tasks.withType(JavaExec).configureEach {
     jvmArgs '-XX:+UnlockExperimentalVMOptions', '-XX:+EnableJVMCI',
@@ -41,6 +92,18 @@ tasks.withType(JavaExec).configureEach {
 }
 
  */
+/*
+tasks.named("shadowJarAll") {
+    dependsOn("classes") // Make sure classes are compiled before building the shadowJar
+}
+
+ */
+tasks.named("build") {
+    dependsOn shadowJarAll // 将 shadowJarAll 添加到 build 任务的依赖项中
+    dependsOn publishToMavenLocal
+}
+
+
 application {
     mainClass = 'dev.anye.core.Main'
 }
