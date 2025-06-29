@@ -16,7 +16,7 @@ public class _File {
     public static String getFilePath(String... strings){
         StringBuilder path = new StringBuilder();
         for (String s : strings){
-            path.append("\\").append(s);
+            path.append(File.separator).append(s);
         }
         return path.toString();
     }

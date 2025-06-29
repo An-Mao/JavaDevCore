@@ -11,18 +11,21 @@ plugins {
 def baseName = "core"
 def mainC = "dev.anye.core.Main"
 group = 'dev.anye'
-version = '25.05.2002'
+version = '25.06.2900'
 archivesBaseName = 'core'
 sourceCompatibility = '21' // 适当的 Java 版本
 repositories {
     mavenCentral()
 }
+configurations {
+    shadow
+}
 dependencies {
     //implementation('org.springframework.boot:spring-boot-starter-web')
     implementation("net.java.dev.jna:jna-platform:5.15.0")
     implementation("com.google.code.gson:gson:2.13.1")
-    implementation("org.graalvm.polyglot:polyglot:24.2.1")
-    implementation("org.graalvm.polyglot:js:24.2.1")
+    //implementation("org.graalvm.polyglot:polyglot:24.2.1")
+    //implementation("org.graalvm.polyglot:js:24.2.1")
     //implementation("org.graalvm.compiler:compiler:24.2.1")
 
     shadow("org.graalvm.polyglot:polyglot:24.2.1")
@@ -60,7 +63,10 @@ tasks.register('shadowJarAll', ShadowJar) {
         attributes("Main-Class" : mainC)
     }
     mergeServiceFiles()
-    configurations = [project.configurations.runtimeClasspath]
+    configurations = [
+            project.configurations.runtimeClasspath,
+            project.configurations.shadow
+    ]
 }
 /*
 tasks {
