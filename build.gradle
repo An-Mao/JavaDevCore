@@ -11,7 +11,7 @@ plugins {
 def baseName = "core"
 def mainC = "dev.anye.core.Main"
 group = 'dev.anye'
-version = '25.06.2900'
+version = '25.07.0701'
 archivesBaseName = 'core'
 sourceCompatibility = '21' // 适当的 Java 版本
 repositories {
@@ -22,6 +22,8 @@ configurations {
 }
 dependencies {
     //implementation('org.springframework.boot:spring-boot-starter-web')
+    implementation 'org.slf4j:slf4j-api:1.7.36'
+    implementation 'ch.qos.logback:logback-classic:1.5.13'
     implementation("net.java.dev.jna:jna-platform:5.15.0")
     implementation("com.google.code.gson:gson:2.13.1")
     //implementation("org.graalvm.polyglot:polyglot:24.2.1")
@@ -45,6 +47,21 @@ tasks.register('customJar', Jar) {
 tasks{
     shadowJar {
         archiveBaseName.set(baseName)
+        archiveClassifier.set("all")
+        manifest {
+            attributes("Main-Class" : mainC)
+        }
+        mergeServiceFiles()
+        configurations = [
+                project.configurations.runtimeClasspath,
+                project.configurations.shadow
+        ]
+    }
+}
+/*
+
+    shadowJar {
+        archiveBaseName.set(baseName)
         archiveClassifier.set("mc")
         manifest {
             attributes("Main-Class" : mainC)
@@ -52,7 +69,7 @@ tasks{
         mergeServiceFiles()
         configurations = [project.configurations.shadow]
     }
-}
+ */
 
 
 
@@ -105,11 +122,15 @@ tasks.named("shadowJarAll") {
 
  */
 tasks.named("build") {
-    dependsOn shadowJarAll // 将 shadowJarAll 添加到 build 任务的依赖项中
+    //dependsOn shadowJarAll // 将 shadowJarAll 添加到 build 任务的依赖项中
     dependsOn publishToMavenLocal
 }
 
 
 application {
     mainClass = 'dev.anye.core.Main'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
 }

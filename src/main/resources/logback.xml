@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- 1. 定义一个控制台Appender -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <!-- 日志输出格式 -->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 2. 定义一个文件Appender (滚动文件Appender) -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 日志文件保存路径及文件名 -->
+        <file>logs/anye.core.log</file>
+
+        <!-- 滚动策略：按时间滚动 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 归档日志文件名模式：每天一个文件 -->
+            <fileNamePattern>logs/anye.core.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!-- 可选：保留最近30天的日志文件 -->
+            <maxHistory>30</maxHistory>
+            <!-- 可选：所有日志文件的总大小上限，超过会删除最旧的日志 -->
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+
+        <!-- 编码器：定义日志内容格式 -->
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 3. 配置特定包或类的Logger (可选) -->
+    <!-- 例如，将 com.example 包下的所有日志级别设置为 DEBUG -->
+    <logger name="dev.anye.core.debug" level="DEBUG" additivity="true">
+        <!-- additivity="true" 表示该logger的日志也会传递给父级logger（包括root）的appender -->
+        <!-- 如果设置为false，则只有这里指定的appender会接收日志 -->
+        <!-- <appender-ref ref="FILE"/> --> <!-- 可以为特定logger指定额外的appender -->
+    </logger>
+
+    <!-- 4. 配置根Logger -->
+    <!-- 所有未被特定logger配置的日志都由根Logger处理 -->
+    <root level="INFO"> <!-- 根Logger的默认级别 -->
+        <appender-ref ref="CONSOLE"/> <!-- 将日志输出到控制台 -->
+        <appender-ref ref="FILE"/>    <!-- 将日志输出到文件 -->
+    </root>
+
+</configuration>
