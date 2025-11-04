@@ -1,19 +1,43 @@
 package dev.anye.core.javascript;
 
-import org.graalvm.polyglot.Context;
-import org.graalvm.polyglot.Value;
-
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.Reader;
+import java.util.HashMap;
 import java.util.Map;
 
-public class _JavaScript {
+public abstract class  _JavaScript<T extends _JavaScript<T>> implements _IJS{
+    private final boolean cache;
+    private final HashMap<String, Reader> fileTemp = new HashMap<>();
+    public _JavaScript(boolean cache){
+        this.cache = cache;
+    }
+    public void clearFileTemp(){
+        fileTemp.clear();
+    }
 
-    public static Object run(String code, Map<String,Object> map){
-        try (Context context = Context.create("js")){
-            // 获取 JavaScript 的绑定对象
-            Value bindings = context.getBindings("js");
-            map.forEach(bindings::putMember);
-            return context.eval("js", code);
-            //return engine.eval(code);
+    public abstract T addParameter(String name , Object value);
+    public abstract T setParameter(Map<String,Object> map);
+
+
+
+    @Override
+    public Object runFile(String file) {
+        if (cache){
+            if (!fileTemp.containsKey(file)) {
+                try {
+                    fileTemp.put(file,new FileReader(file));
+                } catch (FileNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            return this.runFile(fileTemp.get(file));
+        }else {
+            try {
+                return this.runFile(new FileReader(file));
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }

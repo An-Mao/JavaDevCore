@@ -1,37 +1,50 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+//import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     //id 'org.springframework.boot' version '3.3.0' // 适当的版本
     //id 'io.spring.dependency-management' version '1.1.7' // 适当的版本
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
+    //id 'com.github.johnrengelman.shadow' version '8.1.1'
     id 'java'
     id 'maven-publish'
     id 'application'
 }
 def baseName = "core"
-def mainC = "dev.anye.core.Main"
+def mainC = "dev.anye.core.Core"
 group = 'dev.anye'
-version = '25.07.0701'
+version = '2.0.1-25110400'
 archivesBaseName = 'core'
-sourceCompatibility = '21' // 适当的 Java 版本
+//sourceCompatibility = '21' // 适当的 Java 版本
+
+java {
+    sourceCompatibility = '17'
+    targetCompatibility = '17'
+}
+
+
 repositories {
     mavenCentral()
 }
 configurations {
     shadow
+    implementation.extendsFrom shadow
 }
 dependencies {
     //implementation('org.springframework.boot:spring-boot-starter-web')
-    implementation 'org.slf4j:slf4j-api:1.7.36'
-    implementation 'ch.qos.logback:logback-classic:1.5.13'
-    implementation("net.java.dev.jna:jna-platform:5.15.0")
-    implementation("com.google.code.gson:gson:2.13.1")
-    //implementation("org.graalvm.polyglot:polyglot:24.2.1")
-    //implementation("org.graalvm.polyglot:js:24.2.1")
+
+    compileOnly 'org.slf4j:slf4j-api:1.7.36'
+    compileOnly 'ch.qos.logback:logback-classic:1.5.13'
+
+    compileOnly "org.openjdk.nashorn:nashorn-core:15.4"
+    compileOnly "net.java.dev.jna:jna-platform:5.15.0"
+    compileOnly "com.google.code.gson:gson:2.13.1"
+    compileOnly "org.graalvm.polyglot:polyglot:24.2.1"
+    compileOnly "org.graalvm.polyglot:js:24.2.1"
+
+
     //implementation("org.graalvm.compiler:compiler:24.2.1")
 
-    shadow("org.graalvm.polyglot:polyglot:24.2.1")
-    shadow("org.graalvm.polyglot:js:24.2.1")
+    //shadow("org.graalvm.polyglot:polyglot:24.2.1")
+    //shadow("org.graalvm.polyglot:js:24.2.1")
 }
 
 /*
@@ -43,7 +56,7 @@ tasks.register('customJar', Jar) {
 }
         archiveAppendix.set("all")
 */
-
+/*
 tasks{
     shadowJar {
         archiveBaseName.set(baseName)
@@ -58,6 +71,8 @@ tasks{
         ]
     }
 }
+
+ */
 /*
 
     shadowJar {
@@ -72,7 +87,7 @@ tasks{
  */
 
 
-
+/*
 tasks.register('shadowJarAll', ShadowJar) {
     archiveBaseName.set(baseName)
     archiveClassifier.set("all")
@@ -85,11 +100,6 @@ tasks.register('shadowJarAll', ShadowJar) {
             project.configurations.shadow
     ]
 }
-/*
-tasks {
-
-}
-
 
  */
 
@@ -105,6 +115,14 @@ publishing {
     }
     repositories {
         mavenLocal()
+        maven {
+            name = "AnYe" // 或者你仓库的名字
+            url = "https://maven.anye.dev/releases/" // 你的仓库 URL
+            credentials {
+                username = System.getenv("ANYE_MAVEN_USERNAME")
+                password = System.getenv("ANYE_MAVEN_PASSWORD")
+            }
+        }
     }
 }
 
@@ -128,7 +146,7 @@ tasks.named("build") {
 
 
 application {
-    mainClass = 'dev.anye.core.Main'
+    mainClass = mainC
 }
 
 tasks.withType(JavaCompile).configureEach {

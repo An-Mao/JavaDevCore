@@ -4,58 +4,51 @@ import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Source;
 import org.graalvm.polyglot.Value;
 
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Map;
 
-public class _EasyJS {
+public class _GraalJS extends  _JavaScript<_GraalJS> {
     private final Context context;
     private final Value bindings;
 
-
-    public static _EasyJS creat(){
-        return new _EasyJS();
-    }
-    public static _EasyJS NotSafe(){
-        return new _EasyJS( Context.newBuilder("js")
+    public static _GraalJS NotSafe(boolean cache){
+        return new _GraalJS( Context.newBuilder("js")
                 .allowAllAccess(true)
                 .option("engine.WarnInterpreterOnly", "false")
-                .build());
+                .build(),cache);
     }
-    public _EasyJS(Context context,Value bindings){
+    public _GraalJS(Context context, Value bindings,boolean cache){
+        super(cache);
         this.context = context;
         this.bindings = bindings;
     }
-    public _EasyJS(Context context){
-        this.context = context;
-        this.bindings = context.getBindings("js");
+    public _GraalJS(Context context,boolean cache){
+        this(context,context.getBindings("js"),cache);
     }
-    public _EasyJS(){
+    public _GraalJS(boolean cache){
+        super(cache);
         context = Context.create("js");
         bindings = context.getBindings("js");
     }
     public Context getEngine() {
         return context;
     }
-    public _EasyJS addParameter(String name , Object value){
+    @Override
+    public _GraalJS addParameter(String name , Object value){
         this.bindings.putMember(name,value);
         return this;
     }
-    public _EasyJS setParameter(Map<String,Object> map){
+    @Override
+    public _GraalJS setParameter(Map<String,Object> map){
         map.forEach(bindings::putMember);
         return this;
     }
+    @Override
     public Object runCode(String code){
         return context.eval("js",code);
     }
-    public Object runFile(String file){
-        try {
-            return context.eval(Source.newBuilder("js",new FileReader(file),"").build());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Override
     public Object runFile(Reader file){
         try {
             return context.eval(Source.newBuilder("js",file,"").build());
