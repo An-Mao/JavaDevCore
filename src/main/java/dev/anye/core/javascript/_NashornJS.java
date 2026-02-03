@@ -5,10 +5,12 @@ import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
+
+import java.io.IOException;
 import java.io.Reader;
 import java.util.Map;
 
-public class _NashornJS extends _JavaScript<_NashornJS> {
+public class _NashornJS extends _JavaScript<_NashornJS,String> {
     private final ScriptEngineFactory sef;
     private final ScriptEngine engine;
     public _NashornJS(boolean cache){
@@ -41,11 +43,22 @@ public class _NashornJS extends _JavaScript<_NashornJS> {
             throw new RuntimeException(e);
         }
     }
+    
+
     @Override
-    public Object runFile(Reader file){
+    public String getJsData(String code) {
+        return code;
+    }
+    @Override
+    public String getJsData(Reader reader) {
         try {
-            return engine.eval(file);
-        } catch (ScriptException e) {
+            StringBuilder content = new StringBuilder();
+            int character;
+            while ((character = reader.read()) != -1) {
+                content.append((char) character);
+            }
+            return content.toString();
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

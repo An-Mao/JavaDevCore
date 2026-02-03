@@ -4,11 +4,10 @@ import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Source;
 import org.graalvm.polyglot.Value;
 
-import java.io.IOException;
 import java.io.Reader;
 import java.util.Map;
 
-public class _GraalJS extends  _JavaScript<_GraalJS> {
+public class _GraalJS extends  _JavaScript<_GraalJS,Source> {
     private final Context context;
     private final Value bindings;
 
@@ -34,6 +33,7 @@ public class _GraalJS extends  _JavaScript<_GraalJS> {
     public Context getEngine() {
         return context;
     }
+    
     @Override
     public _GraalJS addParameter(String name , Object value){
         this.bindings.putMember(name,value);
@@ -44,17 +44,22 @@ public class _GraalJS extends  _JavaScript<_GraalJS> {
         map.forEach(bindings::putMember);
         return this;
     }
+
     @Override
-    public Object runCode(String code){
-        return context.eval("js",code);
-    }
-    @Override
-    public Object runFile(Reader file){
+    public Source getJsData(Reader reader) {
         try {
-            return context.eval(Source.newBuilder("js",file,"").build());
-        } catch (IOException e) {
+            return Source.newBuilder("js",reader,"").build();
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
+    @Override
+    public Source getJsData(String code) {
+        return Source.create("js", code);
+    }
+    @Override
+    public Object runCode(Source code) {
+        return context.eval(code);
+    };
 
 }

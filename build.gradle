@@ -11,7 +11,7 @@ plugins {
 def baseName = "core"
 def mainC = "dev.anye.core.Core"
 group = 'dev.anye'
-version = '2.0.1-25110400'
+version = '2.0.2-26020300'
 archivesBaseName = 'core'
 //sourceCompatibility = '21' // 适当的 Java 版本
 
