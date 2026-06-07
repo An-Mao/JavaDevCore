@@ -11,12 +11,40 @@ public class _File {
     /**
      *
      * @param strings a ,b ,c
-     * @return "/"+"a"+"/"+"b"
+     * @return "a"+"/"+"b"
      */
     public static String getFilePath(String... strings){
         StringBuilder path = new StringBuilder();
         for (String s : strings){
+            path.append(s).append(File.separator);
+        }
+        path.deleteCharAt(path.length()-1);
+        return path.toString();
+    }
+
+    /**
+     *
+     * @param strings a ,b ,c
+     * @return "/"+"a"+"/"+"b"
+     */
+    public static String getFilePathX(String... strings){
+        StringBuilder path = new StringBuilder();
+        for (String s : strings){
             path.append(File.separator).append(s);
+        }
+        return path.toString();
+    }
+
+
+    /**
+     *
+     * @param strings a ,b ,c
+     * @return "a"+"/"+"b"+"/"
+     */
+    public static String getDirPath(String... strings){
+        StringBuilder path = new StringBuilder();
+        for (String s : strings){
+            path.append(s).append(File.separator);
         }
         return path.toString();
     }

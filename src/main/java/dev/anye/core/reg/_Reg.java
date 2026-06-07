@@ -3,6 +3,7 @@ package dev.anye.core.reg;
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URL;
@@ -18,10 +19,10 @@ public class _Reg<T,A extends Annotation> {
     private final Class<A> type;
     private final Consumer<A> consumer;
     private final Create<T,A> create;
-    //private final Method nameMethod; // <-- 这里！声明为类的成员变量
+    private final Method nameMethod;
     public _Reg(Class<A> type, Consumer<A> consumer,Create<T,A> create){
         try {
-            type.getMethod("name");
+            nameMethod = type.getMethod("name",String.class);
         } catch (NoSuchMethodException e) {
             throw new IllegalArgumentException("The annotation type " + type.getName() + " must define a 'String name()' method to be used with _Reg.", e);
         }
@@ -104,10 +105,15 @@ public class _Reg<T,A extends Annotation> {
                 A annotation = clazz.getAnnotation(type);
                 if (annotation != null) {
                     consumer.accept(annotation);
-                    _RegCoreAnnotation coreAnnotation = (_RegCoreAnnotation) annotation;
-                    String name = coreAnnotation.name();
-                    if (name == null || name.isEmpty()) name = clazz.getSimpleName().toLowerCase();
-                    datas.put(name, create.create(clazz,annotation));
+					try {
+						String name = (String) nameMethod.invoke(annotation);
+						if (name == null || name.isEmpty()) name = clazz.getSimpleName().toLowerCase();
+						datas.put(name, create.create(clazz,annotation));
+					} catch (IllegalAccessException | InvocationTargetException | SecurityException e) {
+						throw new RuntimeException("Failed to process annotation for class: " + className, e);
+					}
+                    // _RegCoreAnnotation coreAnnotation = (_RegCoreAnnotation) annotation;
+                    // String name = coreAnnotation.name();
                 }
             }
         } catch (ClassNotFoundException e) {
