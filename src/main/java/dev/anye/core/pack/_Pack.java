@@ -16,11 +16,10 @@ public class _Pack {
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		for (String name : names) {
 			if (replace && new File(_File.getFilePath(putPath, name + suffix)).exists()) continue;
-			String filePath = _File.getFilePath(putPath, name + suffix);
-			try (InputStream inputStream = classLoader.getResourceAsStream(filePath)) {
+			try (InputStream inputStream = classLoader.getResourceAsStream(_File.getFilePath(packPath, name + suffix))) {
 				if (inputStream == null)
-					throw new FileNotFoundException("Resource not found: " + filePath);
-				Path outputPath = Paths.get(filePath);
+					throw new FileNotFoundException("Resource not found: " + _File.getFilePath(packPath, name + suffix));
+				Path outputPath = Paths.get(_File.getFilePath(putPath, name + suffix));
 				Files.copy(inputStream, outputPath, StandardCopyOption.REPLACE_EXISTING);
 			} catch (IOException e) {
 				throw new RuntimeException(e);
