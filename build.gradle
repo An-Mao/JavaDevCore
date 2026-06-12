@@ -8,11 +8,9 @@ plugins {
     id 'maven-publish'
     id 'application'
 }
-def baseName = "core"
-def mainC = "dev.anye.core.Core"
-group = 'dev.anye'
-version = '2.0.4-26060800'
-archivesBaseName = 'core'
+//
+//def baseName = "core"
+//def mainC = "dev.anye.core.Core"
 //sourceCompatibility = '21' // 适当的 Java 版本
 
 java {
@@ -46,6 +44,18 @@ dependencies {
     //shadow("org.graalvm.polyglot:polyglot:24.2.1")
     //shadow("org.graalvm.polyglot:js:24.2.1")
 }
+
+
+tasks.withType(ProcessResources).configureEach {
+    var replaceProperties = [
+            group : project.group,
+            version : project.version,
+            baseName : project.baseName,
+            archivesBaseName : project.baseName
+    ]
+    inputs.properties replaceProperties
+}
+
 
 /*
 tasks.register('customJar', Jar) {
@@ -142,13 +152,13 @@ tasks.named("shadowJarAll") {
 
  */
 tasks.named("build") {
-    //dependsOn shadowJarAll // 将 shadowJarAll 添加到 build 任务的依赖项中
+    //dependsOn shadowJarAll
     dependsOn publishToMavenLocal
 }
 
 
 application {
-    mainClass = mainC
+    mainClass = "dev.anye.core.Core"
 }
 
 tasks.withType(JavaCompile).configureEach {
