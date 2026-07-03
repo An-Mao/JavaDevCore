@@ -1,5 +1,8 @@
 package dev.anye.core.pack;
 
+import dev.anye.core.cdt._CDT;
+import dev.anye.core.cdt._SuffixCDT;
+import dev.anye.core.exception._IOException;
 import dev.anye.core.system._File;
 
 import java.io.File;
@@ -22,12 +25,20 @@ public class _Pack {
 				Path outputPath = Paths.get(_File.getFilePath(putPath, name + suffix));
 				Files.copy(inputStream, outputPath, StandardCopyOption.REPLACE_EXISTING);
 			} catch (IOException e) {
-				throw new RuntimeException(e);
+				throw new _IOException(e);
 			}
 		}
 	}
 
 	public static void writeFiles(String packPath, String putPath, String suffix, String... names) {
 		writeFiles(packPath, putPath, suffix, false, names);
+	}
+
+	public static void writeJsonFiles(String packPath, String putPath, boolean replace, String... names) {
+		writeFiles(packPath, putPath, _SuffixCDT.JSON_SUFFIX, replace, names);
+	}
+
+	public static void writeJsonFiles(String packPath, String putPath, String... names) {
+		writeFiles(packPath, putPath, _SuffixCDT.JSON_SUFFIX, names);
 	}
 }

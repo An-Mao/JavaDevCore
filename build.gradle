@@ -135,6 +135,14 @@ publishing {
             }
         }
 		*/
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/An-Mao/JavaDevCore")
+            credentials {
+                username = System.getenv("GTU")
+                password = "github_pat_" + System.getenv("GTT")
+            }
+        }
     }
 }
 
