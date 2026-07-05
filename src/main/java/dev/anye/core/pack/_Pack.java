@@ -1,6 +1,5 @@
 package dev.anye.core.pack;
 
-import dev.anye.core.cdt._CDT;
 import dev.anye.core.cdt._SuffixCDT;
 import dev.anye.core.exception._IOException;
 import dev.anye.core.system._File;

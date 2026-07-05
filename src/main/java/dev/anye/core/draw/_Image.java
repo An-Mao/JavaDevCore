@@ -5,8 +5,10 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 public class _Image {
+	final Logger logger = Logger.getLogger(getClass().getName());
 	private final int width;
 	private final int height;
 	private final int scaleFactor; // 添加缩放因子
@@ -107,7 +109,7 @@ public class _Image {
 		try {
 			ImageIO.write(image, "png", new File(path));
 		} catch (IOException e) {
-			System.out.println(e.getMessage());
+			logger.severe(e.getMessage());
 		}
 	}
 
@@ -120,7 +122,7 @@ public class _Image {
 		try {
 			ImageIO.write(scaledImage, "png", new File(path));
 		} catch (IOException e) {
-			System.out.println(e.getMessage());
+			logger.severe(e.getMessage());
 		}
 	}
 

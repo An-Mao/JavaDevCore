@@ -1,6 +1,6 @@
 package dev.anye.core.math;
 
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 public class _WeightRandom<T> {
@@ -8,7 +8,7 @@ public class _WeightRandom<T> {
 	private final int[] prefixSum;
 	private final Random random;
 
-	public _WeightRandom(HashMap<T, Integer> map) {
+	public _WeightRandom(Map<T, Integer> map) {
 		if (map.isEmpty()) {
 			throw new IllegalArgumentException("error:: the length of items and weights must be equal and not empty");
 		}
@@ -59,7 +59,8 @@ public class _WeightRandom<T> {
 	}
 
 	private int binarySearch(int value) {
-		int left = 0, right = prefixSum.length - 1;
+		int left = 0;
+		int right = prefixSum.length - 1;
 		while (left < right) {
 			int mid = left + (right - left) / 2;
 			if (value < prefixSum[mid]) {

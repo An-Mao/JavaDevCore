@@ -20,7 +20,13 @@ java {
 
 
 repositories {
+    mavenLocal()
     mavenCentral()
+    maven {
+        name = "AnYeLocalRepo"
+        allowInsecureProtocol = true
+        url = uri((System.getenv("LOCAL_MAVEN") ?: "https://maven.anye.dev") + "/repository/maven-public")
+    }
 }
 configurations {
     shadow
@@ -50,8 +56,8 @@ tasks.withType(ProcessResources).configureEach {
     var replaceProperties = [
             group : project.group,
             version : project.version,
-            baseName : project.baseName,
-            archivesBaseName : project.baseName
+            baseName : baseName,
+            archivesBaseName : baseName
     ]
     inputs.properties replaceProperties
 }
@@ -116,31 +122,30 @@ tasks.register('shadowJarAll', ShadowJar) {
 //./gradlew clean build publishToMavenLocal
 publishing {
     publications {
-        create('mavenJava', MavenPublication) {
+        mavenJava(MavenPublication) {
             groupId = group
-            artifactId = archivesBaseName
+            artifactId = baseName
             version = version
             from components.java
         }
     }
     repositories {
         mavenLocal()
-		/*
         maven {
-            name = "AnYe"
-            url = "https://maven.anye.dev/releases/"
+            name = "GitHubJavaRepo"
+            url = uri("https://maven.pkg.github.com/An-Mao/JavaRepo")
             credentials {
-                username = System.getenv("ANYE_MAVEN_USERNAME")
-                password = System.getenv("ANYE_MAVEN_PASSWORD")
+                username = "An-Mao"
+                password = "ghp_" + System.getenv("GTT")
             }
         }
-		*/
         maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/An-Mao/JavaDevCore")
+            name = "LocalRepo"
+			allowInsecureProtocol = true
+            url = uri(System.getenv("LOCAL_MAVEN") + "/repository/maven-releases")
             credentials {
-                username = System.getenv("GTU")
-                password = "github_pat_" + System.getenv("GTT")
+                username = "am"
+                password = System.getenv("N_P")
             }
         }
     }

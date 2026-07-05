@@ -2,6 +2,7 @@ package dev.anye.core.math;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.Stack;
 
@@ -102,7 +103,7 @@ public class _Math extends _MathCDT {
 		return log + (n >>> 1);
 	}
 
-	public static ArrayList<Point2D.Double> getPosWithCircle(double circleRadius, int pointNumber) {
+	public static List<Point2D.Double> getPosWithCircle(double circleRadius, int pointNumber) {
 		ArrayList<Point2D.Double> points = new ArrayList<>();
 		for (int i = 0; i < pointNumber; i++) {
 			double angle = TWICE_PI * i / pointNumber;
@@ -219,7 +220,7 @@ public class _Math extends _MathCDT {
 			theta2 = Math.toRadians(theta2); // 终止角度（弧度）
 
 			// 计算扇形的中心角度
-			double thetaMid = (theta1 + theta2) / 2;
+			// double thetaMid = (theta1 + theta2) / 2;
 
 			// 扇形边缘上的两点坐标
 			double x1 = xc + r * Math.cos(theta1);
@@ -231,13 +232,11 @@ public class _Math extends _MathCDT {
 			double centerX = (x1 + x2) / 2;
 			double centerY = (y1 + y2) / 2;
 
-			// 输出结果
-			//System.out.println("扇形中心位置：(" + centerX + ", " + centerY + ")");
 			return new double[]{centerX, centerY};
 		}
 
 		protected double getArc(double angleDegrees, double radius) {
-			return (angleDegrees / 360.0) * (2 * _Math.PI * radius);
+			return (angleDegrees / 360.0) * (2 * PI * radius);
 		}
 
 		protected double[] getArcCenter(double radius, double theta, double alpha) {
@@ -267,6 +266,8 @@ public class _Math extends _MathCDT {
 	}
 
 	public static class RD {
+		private RD() {}
+
 		public static Random random = new Random();
 
 		public static boolean isHit(float p) {
@@ -296,11 +297,11 @@ public class _Math extends _MathCDT {
 	}
 
 
-	public static ArrayList<Point2D.Double> distributePoints(double circleRadius, int pointNumber) {
+	public static List<Point2D.Double> distributePoints(double circleRadius, int pointNumber) {
 		return distributePoints(circleRadius, pointNumber, 0);
 	}
 
-	public static ArrayList<Point2D.Double> distributePoints(double circleRadius, int pointNumber, double rotationAngle) {
+	public static List<Point2D.Double> distributePoints(double circleRadius, int pointNumber, double rotationAngle) {
 		ArrayList<Point2D.Double> points = new ArrayList<>();
 		for (int i = 0; i < pointNumber; i++) {
 			double angle = rotationAngle + TWICE_PI * i / pointNumber;
