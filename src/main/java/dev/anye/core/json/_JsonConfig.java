@@ -7,6 +7,10 @@ import java.io.*;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class _JsonConfig<T> extends _JsonSupport {
 	protected final boolean checkData;
@@ -159,4 +163,44 @@ public class _JsonConfig<T> extends _JsonSupport {
 			throw new _IOException(e);
 		}
 	}
+
+
+	public boolean isPresent(){
+		return data.isPresent();
+	}
+	public void ifPresent(Consumer<? super T> action){
+		data.ifPresent(action);
+	}
+	public <U> Optional<U> map(Function<? super T, ? extends U> mapper){
+		return data.map(mapper);
+	}
+	public Optional<T> or(Supplier<Optional<? extends T>> supplier){
+		return data.or(supplier);
+	}
+	public T orElse(T other){
+		return data.orElse(other);
+	}
+	public Optional<T> filter(Predicate<? super T> predicate){
+		return data.filter(predicate);
+	}
+	public  <U> Optional<U> flatMap(Function<? super T, Optional<? extends U>> mapper){
+		return data.flatMap(mapper);
+	}
+	public boolean isEmpty(){
+		return data.isEmpty();
+	}
+	public T orElseGet(Supplier<? extends T> supplier){
+		return data.orElseGet(supplier);
+	}
+	public T orElseThrow(){
+		return data.orElseThrow();
+	}
+	public <X extends Throwable> T orElseThrow(Supplier<? extends X> exceptionSupplier) throws X{
+		return data.orElseThrow(exceptionSupplier);
+	}
+	public void ifPresentOrElse(Consumer<? super T> action, Runnable emptyAction){
+		data.ifPresentOrElse(action,emptyAction);
+	}
+
+
 }
