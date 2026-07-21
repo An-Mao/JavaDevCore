@@ -11,15 +11,15 @@ import java.util.Optional;
 public class _JsonConfig<T> extends _JsonSupport {
 	protected final boolean checkData;
 	protected final String filePath;
-	protected final T defaultRawData;
+	private final T defaultRawData;
 	protected final Type type;
 	//Expose visibility to avoid the need for subclasses to customize.
 	protected Optional<T> data;
 
 	public _JsonConfig(String filePath,T defaultRawData, TypeToken<T> typeToken, boolean checkData) {
 		this.filePath = filePath;
-		this.defaultRawData = defaultRawData;
 		this.type = typeToken.getType();
+		this.defaultRawData = GSON.fromJson(GSON.toJson(defaultRawData),type);
 		this.checkData = checkData;
 		this.data = Optional.empty();
 		init();
@@ -28,23 +28,27 @@ public class _JsonConfig<T> extends _JsonSupport {
 		this(filePath,defaultData,typeToken,true);
 	}
 	/**
+	 * @deprecated 
 	 * Using this method is no longer recommended, as it may entail numerous issues;
 	 * @param filePath filePath
 	 * @param defaultData defaultData
 	 * @param typeToken typeToken
 	 */
-	@Deprecated
+	@Deprecated(since = "2.0.5")
+	@SuppressWarnings("unchecked")
 	public _JsonConfig(String filePath, String defaultData, TypeToken<T> typeToken, boolean checkData) {
+		
 		this(filePath, (T) GSON.fromJson(defaultData,typeToken.getType()),typeToken,checkData);
 	}
 
 	/**
+	 * @deprecated 
 	 * Using this method is no longer recommended, as it may entail numerous issues;
 	 * @param filePath filePath
 	 * @param defaultData defaultData
 	 * @param typeToken typeToken
 	 */
-	@Deprecated
+	@Deprecated(since = "2.0.5")
 	public _JsonConfig(String filePath, String defaultData, TypeToken<T> typeToken) {
 		this(filePath, defaultData, typeToken, true);
 	}
@@ -60,7 +64,7 @@ public class _JsonConfig<T> extends _JsonSupport {
 		if (!file.exists()) {
 			reset();
 		} else {
-			if (checkData) CheckData(GSON.toJson(defaultRawData,type), filePath);
+			if (checkData) checkData(GSON.toJson(defaultRawData,type), filePath);
 		}
 		load();
 	}
@@ -77,7 +81,7 @@ public class _JsonConfig<T> extends _JsonSupport {
 		try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(filePath), StandardCharsets.UTF_8)) {
 			writer.write(GSON.toJson(defaultRawData,this.type));
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new _IOException(e);
 		}
 	}
 
@@ -94,7 +98,7 @@ public class _JsonConfig<T> extends _JsonSupport {
 	}
 
 	/**
-	 * Save new data to a file and load it.
+	 * Save new data to file and update memory.
 	 * <ul>
 	 *     Frequent use of this method is not recommended, as it can lead to unnecessary runtime errors.
 	 * </ul>
@@ -103,9 +107,10 @@ public class _JsonConfig<T> extends _JsonSupport {
 	public void save(T data) {
 		if (data == null) return;
 		setSaveFile(data);
-		reload();
+		this.data = Optional.of(data);
 	}
 	public void save(Optional<T> data){
+		if (data == null) return;
 		save(data.orElse(defaultRawData));
 	}
 
@@ -124,11 +129,12 @@ public class _JsonConfig<T> extends _JsonSupport {
 	}
 
 	/**
+	 * @deprecated
 	 * Retrieve data, returning the default raw data if it is unavailable.
 	 * It is not recommended to use this method anymore.
 	 * @return T
 	 */
-	@Deprecated
+	@Deprecated(since = "2.0.5")
 	public T getData() {
 		return data.orElse(defaultRawData);
 	}
@@ -140,6 +146,7 @@ public class _JsonConfig<T> extends _JsonSupport {
 	 * @param data new data
 	 */
 	public void setData(T data){
+		if (data == null) return;
 		this.data = Optional.of(data);
 	}
 	/**
