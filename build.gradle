@@ -41,8 +41,8 @@ dependencies {
     compileOnly "org.openjdk.nashorn:nashorn-core:15.4"
     compileOnly "net.java.dev.jna:jna-platform:5.15.0"
     compileOnly "com.google.code.gson:gson:2.13.1"
-    compileOnly "org.graalvm.polyglot:polyglot:24.2.1"
-    compileOnly "org.graalvm.polyglot:js:24.2.1"
+    compileOnly "org.graalvm.polyglot:polyglot:25.0.2"
+    compileOnly "org.graalvm.polyglot:js:25.0.2"
 
 
     //implementation("org.graalvm.compiler:compiler:24.2.1")
@@ -139,15 +139,16 @@ publishing {
                 password = "ghp_" + System.getenv("GTT")
             }
         }
-        maven {
+
+        /*maven {
             name = "LocalRepo"
-			allowInsecureProtocol = true
+            allowInsecureProtocol = true
             url = uri(System.getenv("LOCAL_MAVEN") + "/repository/maven-releases")
             credentials {
                 username = "am"
                 password = System.getenv("N_P")
             }
-        }
+        }*/
     }
 }
 

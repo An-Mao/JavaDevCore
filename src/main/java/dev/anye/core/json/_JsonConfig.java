@@ -6,13 +6,14 @@ import dev.anye.core.exception._IOException;
 
 import java.io.*;
 import java.lang.reflect.Type;
+import java.util.Optional;
 
 public class _JsonConfig<T> extends _JsonSupport {
 	private final boolean checkData;
 	protected final String filePath;
 	protected final String defaultData;
 	protected final Type type;
-	protected T data;
+	protected Optional<T> data = Optional.empty();
 
 	public _JsonConfig(String filePath, String defaultData, TypeToken<T> typeToken) {
 		this(filePath, defaultData, typeToken, true);
@@ -55,10 +56,10 @@ public class _JsonConfig<T> extends _JsonSupport {
 	 * Loading the file content temporarily sets the `data` variable to `null`; accessing the `data` variable during the loading process will result in an error. It is recommended to minimize the use of methods that rely on this method.
 	 */
 	private void load() {
-		data = null;
+		data = Optional.empty();
 		Gson gson = new Gson();
 		try (Reader reader = new FileReader(filePath)) {
-			data = gson.fromJson(reader, this.type);
+			data = Optional.of(gson.fromJson(reader, this.type));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -72,8 +73,12 @@ public class _JsonConfig<T> extends _JsonSupport {
 	 * @param data new data
 	 */
 	public void save(T data) {
+		if (data == null) return;
 		setSaveFile(data);
 		init();
+	}
+	public void save(Optional<T> data){
+		save(data.orElse(null));
 	}
 
 	/**
@@ -86,16 +91,22 @@ public class _JsonConfig<T> extends _JsonSupport {
 		save(this.data);
 	}
 
-	public T getData() {
-		return data;
+	public Optional<T> data(){
+		return this.data;
 	}
+
+
+	public T getData() {
+		return data.orElse(null);
+	}
+
 
 	/**
 	 * Modify the existing data only, without saving it.
 	 * @param data new data
 	 */
 	public void setData(T data){
-		this.data = data;
+		this.data = Optional.of(data);
 	}
 	/**
 	 * Save without altering the existing data.
