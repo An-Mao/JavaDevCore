@@ -1,31 +1,55 @@
 package dev.anye.core.json;
 
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import dev.anye.core.exception._IOException;
 
 import java.io.*;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 public class _JsonConfig<T> extends _JsonSupport {
-	private final boolean checkData;
+	protected final boolean checkData;
 	protected final String filePath;
-	protected final String defaultData;
+	protected final T defaultRawData;
 	protected final Type type;
-	protected Optional<T> data = Optional.empty();
+	//Expose visibility to avoid the need for subclasses to customize.
+	protected Optional<T> data;
 
+	public _JsonConfig(String filePath,T defaultRawData, TypeToken<T> typeToken, boolean checkData) {
+		this.filePath = filePath;
+		this.defaultRawData = defaultRawData;
+		this.type = typeToken.getType();
+		this.checkData = checkData;
+		this.data = Optional.empty();
+		init();
+	}
+	public _JsonConfig(String filePath, T defaultData, TypeToken<T> typeToken){
+		this(filePath,defaultData,typeToken,true);
+	}
+	/**
+	 * Using this method is no longer recommended, as it may entail numerous issues;
+	 * @param filePath filePath
+	 * @param defaultData defaultData
+	 * @param typeToken typeToken
+	 */
+	@Deprecated
+	public _JsonConfig(String filePath, String defaultData, TypeToken<T> typeToken, boolean checkData) {
+		this(filePath, (T) GSON.fromJson(defaultData,typeToken.getType()),typeToken,checkData);
+	}
+
+	/**
+	 * Using this method is no longer recommended, as it may entail numerous issues;
+	 * @param filePath filePath
+	 * @param defaultData defaultData
+	 * @param typeToken typeToken
+	 */
+	@Deprecated
 	public _JsonConfig(String filePath, String defaultData, TypeToken<T> typeToken) {
 		this(filePath, defaultData, typeToken, true);
 	}
 
-	public _JsonConfig(String filePath, String defaultData, TypeToken<T> typeToken, boolean checkData) {
-		this.filePath = filePath;
-		this.defaultData = defaultData;
-		this.type = typeToken.getType();
-		this.checkData = checkData;
-		init();
-	}
+
 
 	/**
 	 * Initial loading
@@ -36,30 +60,34 @@ public class _JsonConfig<T> extends _JsonSupport {
 		if (!file.exists()) {
 			reset();
 		} else {
-			if (checkData) CheckData(defaultData, filePath);
+			if (checkData) CheckData(GSON.toJson(defaultRawData,type), filePath);
 		}
+		load();
+	}
+
+	public void reload(){
 		load();
 	}
 
 	/**
 	 * Overwrite the original content with default data.
+	 * Directory existence is not checked; please ensure the provided path already exists.
 	 */
 	public void reset() {
-		try (FileWriter writer = new FileWriter(filePath)) {
-			writer.write(defaultData);
+		try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(filePath), StandardCharsets.UTF_8)) {
+			writer.write(GSON.toJson(defaultRawData,this.type));
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	/**
-	 * Loading the file content temporarily sets the `data` variable to `null`; accessing the `data` variable during the loading process will result in an error. It is recommended to minimize the use of methods that rely on this method.
+	 * Loads file data and throws an exception if the data is null; please verify that the structure matches the expected type.
+	 * Before loading completes, the data remains the old data (or {@link Optional#empty} if it is the initial load).
 	 */
 	private void load() {
-		data = Optional.empty();
-		Gson gson = new Gson();
-		try (Reader reader = new FileReader(filePath)) {
-			data = Optional.of(gson.fromJson(reader, this.type));
+		try (Reader reader = new InputStreamReader(new FileInputStream(filePath),StandardCharsets.UTF_8)) {
+			data = Optional.of(GSON.fromJson(reader, this.type));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -75,10 +103,10 @@ public class _JsonConfig<T> extends _JsonSupport {
 	public void save(T data) {
 		if (data == null) return;
 		setSaveFile(data);
-		init();
+		reload();
 	}
 	public void save(Optional<T> data){
-		save(data.orElse(null));
+		save(data.orElse(defaultRawData));
 	}
 
 	/**
@@ -95,14 +123,20 @@ public class _JsonConfig<T> extends _JsonSupport {
 		return this.data;
 	}
 
-
+	/**
+	 * Retrieve data, returning the default raw data if it is unavailable.
+	 * It is not recommended to use this method anymore.
+	 * @return T
+	 */
+	@Deprecated
 	public T getData() {
-		return data.orElse(null);
+		return data.orElse(defaultRawData);
 	}
 
 
 	/**
 	 * Modify the existing data only, without saving it.
+	 * Must not be null.
 	 * @param data new data
 	 */
 	public void setData(T data){
@@ -112,9 +146,8 @@ public class _JsonConfig<T> extends _JsonSupport {
 	 * Save without altering the existing data.
 	 */
 	public void setSaveFile(T data){
-		Gson gson = new Gson();
-		try (Writer writer = new FileWriter(filePath)) {
-			gson.toJson(data, writer);
+		try (OutputStreamWriter writer =  new OutputStreamWriter(new FileOutputStream(filePath), StandardCharsets.UTF_8)) {
+			GSON.toJson(data,this.type, writer);
 		} catch (IOException e) {
 			throw new _IOException(e);
 		}

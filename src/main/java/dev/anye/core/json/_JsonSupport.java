@@ -1,9 +1,6 @@
 package dev.anye.core.json;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -11,6 +8,8 @@ import java.io.IOException;
 import java.util.Map;
 
 public class _JsonSupport {
+	public static final Gson GSON = new Gson();
+	
 	public static void CheckData(String sourceJson, String targetJsonFilePath) {
 		try {
 			JsonElement sourceJsonElement = JsonParser.parseString(sourceJson);
