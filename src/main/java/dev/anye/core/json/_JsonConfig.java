@@ -2,6 +2,7 @@ package dev.anye.core.json;
 
 import com.google.gson.reflect.TypeToken;
 import dev.anye.core.exception._IOException;
+import dev.anye.core.system._File;
 
 import java.io.*;
 import java.lang.reflect.Type;
@@ -82,7 +83,7 @@ public class _JsonConfig<T> extends _JsonSupport {
 	 * Directory existence is not checked; please ensure the provided path already exists.
 	 */
 	public void reset() {
-		try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(filePath), StandardCharsets.UTF_8)) {
+		try (OutputStreamWriter writer = _File.startWriterWithUtf8(filePath)) {
 			writer.write(GSON.toJson(defaultRawData,this.type));
 		} catch (IOException e) {
 			throw new _IOException(e);
@@ -94,7 +95,7 @@ public class _JsonConfig<T> extends _JsonSupport {
 	 * Before loading completes, the data remains the old data (or {@link Optional#empty} if it is the initial load).
 	 */
 	private void load() {
-		try (Reader reader = new InputStreamReader(new FileInputStream(filePath),StandardCharsets.UTF_8)) {
+		try (Reader reader = _File.loadFileWithUtf8(filePath)) {
 			data = Optional.of(GSON.fromJson(reader, this.type));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -157,7 +158,7 @@ public class _JsonConfig<T> extends _JsonSupport {
 	 * Save without altering the existing data.
 	 */
 	public void setSaveFile(T data){
-		try (OutputStreamWriter writer =  new OutputStreamWriter(new FileOutputStream(filePath), StandardCharsets.UTF_8)) {
+		try (OutputStreamWriter writer = _File.startWriterWithUtf8(filePath)) {
 			GSON.toJson(data,this.type, writer);
 		} catch (IOException e) {
 			throw new _IOException(e);

@@ -1,10 +1,10 @@
 package dev.anye.core.javascript;
 
 import dev.anye.core.bytes._Byte;
+import dev.anye.core.exception._IOException;
+import dev.anye.core.system._File;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.Reader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +15,7 @@ public abstract class _JavaScript<T extends _JavaScript<T, S>, S> {
 	private final boolean cache;
 	private final HashMap<String, S> temp = new HashMap<>();
 
-	public _JavaScript(boolean cache) {
+	protected _JavaScript(boolean cache) {
 		this.cache = cache;
 	}
 
@@ -35,23 +35,20 @@ public abstract class _JavaScript<T extends _JavaScript<T, S>, S> {
 	}
 
 
-	@Deprecated
+	@Deprecated(since = "2.0.5")
 	public Object runCode(String code) {
 		return runCode(_Byte.getMd5(code), code);
 	}
 
 	public Object runCode(String key, String code) {
 		if (cache) {
-			if (!temp.containsKey(key)) {
-				temp.put(key, getJsData(code));
-			}
-			return this.runCode(temp.get(key));
+			return this.runCode(temp.computeIfAbsent(key,s -> getJsData(code)));
 		} else {
 			return this.runCode(getJsData(code));
 		}
 	}
 
-	@Deprecated
+	@Deprecated(since = "2.0.5")
 	public Object runFile(String file) {
 		return runFile(file, file);
 	}
@@ -60,17 +57,17 @@ public abstract class _JavaScript<T extends _JavaScript<T, S>, S> {
 		if (cache) {
 			if (!temp.containsKey(key)) {
 				try {
-					temp.put(key, getJsData(new FileReader(file)));
+					temp.put(key, getJsData(_File.loadFileWithUtf8(file)));
 				} catch (FileNotFoundException e) {
-					throw new RuntimeException(e);
+					throw new _IOException(file);
 				}
 			}
 			return this.runCode(temp.get(file));
 		} else {
 			try {
-				return this.runCode(getJsData(new FileReader(file)));
+				return this.runCode(getJsData(_File.loadFileWithUtf8(file)));
 			} catch (FileNotFoundException e) {
-				throw new RuntimeException(e);
+				throw new _IOException(e);
 			}
 		}
 	}

@@ -1,7 +1,9 @@
 package dev.anye.core.system;
 
-import java.io.File;
-import java.io.IOException;
+import dev.anye.core.exception._IOException;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
@@ -69,7 +71,7 @@ public class _File {
 		for (String dir : dirs) {
 			File folder = new File(dir);
 			if (!folder.exists() && !folder.mkdirs()) {
-				throw new RuntimeException("dir create failed");
+				throw new _IOException("dir create failed");
 			}
 		}
 	}
@@ -119,5 +121,12 @@ public class _File {
 		} else {
 			return filename;
 		}
+	}
+
+	public static InputStreamReader loadFileWithUtf8(String file) throws FileNotFoundException {
+		return new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
+	}
+	public static OutputStreamWriter startWriterWithUtf8(String file) throws FileNotFoundException {
+		return new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
 	}
 }
