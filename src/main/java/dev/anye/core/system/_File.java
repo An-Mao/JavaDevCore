@@ -126,6 +126,7 @@ public class _File {
 	public static InputStreamReader loadFileWithUtf8(String file) throws FileNotFoundException {
 		return new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
 	}
+
 	public static OutputStreamWriter startWriterWithUtf8(String file) throws FileNotFoundException {
 		return new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
 	}

@@ -4,9 +4,11 @@ import com.google.gson.reflect.TypeToken;
 import dev.anye.core.exception._IOException;
 import dev.anye.core.system._File;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
 import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -21,43 +23,42 @@ public class _JsonConfig<T> extends _JsonSupport {
 	//Expose visibility to avoid the need for subclasses to customize.
 	protected Optional<T> data;
 
-	public _JsonConfig(String filePath,T defaultRawData, TypeToken<T> typeToken, boolean checkData) {
+	public _JsonConfig(String filePath, T defaultRawData, TypeToken<T> typeToken, boolean checkData) {
 		this.filePath = filePath;
 		this.type = typeToken.getType();
-		this.defaultRawData = GSON.fromJson(GSON.toJson(defaultRawData),type);
+		this.defaultRawData = GSON.fromJson(GSON.toJson(defaultRawData), type);
 		this.checkData = checkData;
 		this.data = Optional.empty();
 		init();
 	}
-	public _JsonConfig(String filePath, T defaultData, TypeToken<T> typeToken){
-		this(filePath,defaultData,typeToken,true);
+
+	public _JsonConfig(String filePath, T defaultData, TypeToken<T> typeToken) {
+		this(filePath, defaultData, typeToken, true);
 	}
+
 	/**
-	 * @deprecated 
-	 * Using this method is no longer recommended, as it may entail numerous issues;
-	 * @param filePath filePath
+	 * @param filePath    filePath
 	 * @param defaultData defaultData
-	 * @param typeToken typeToken
+	 * @param typeToken   typeToken
+	 * @deprecated Using this method is no longer recommended, as it may entail numerous issues;
 	 */
 	@Deprecated(since = "2.0.5")
 	@SuppressWarnings("unchecked")
 	public _JsonConfig(String filePath, String defaultData, TypeToken<T> typeToken, boolean checkData) {
-		
-		this(filePath, (T) GSON.fromJson(defaultData,typeToken.getType()),typeToken,checkData);
+
+		this(filePath, (T) GSON.fromJson(defaultData, typeToken.getType()), typeToken, checkData);
 	}
 
 	/**
-	 * @deprecated 
-	 * Using this method is no longer recommended, as it may entail numerous issues;
-	 * @param filePath filePath
+	 * @param filePath    filePath
 	 * @param defaultData defaultData
-	 * @param typeToken typeToken
+	 * @param typeToken   typeToken
+	 * @deprecated Using this method is no longer recommended, as it may entail numerous issues;
 	 */
 	@Deprecated(since = "2.0.5")
 	public _JsonConfig(String filePath, String defaultData, TypeToken<T> typeToken) {
 		this(filePath, defaultData, typeToken, true);
 	}
-
 
 
 	/**
@@ -69,12 +70,12 @@ public class _JsonConfig<T> extends _JsonSupport {
 		if (!file.exists()) {
 			reset();
 		} else {
-			if (checkData) checkData(GSON.toJson(defaultRawData,type), filePath);
+			if (checkData) checkData(GSON.toJson(defaultRawData, type), filePath);
 		}
 		load();
 	}
 
-	public void reload(){
+	public void reload() {
 		load();
 	}
 
@@ -84,7 +85,7 @@ public class _JsonConfig<T> extends _JsonSupport {
 	 */
 	public void reset() {
 		try (OutputStreamWriter writer = _File.startWriterWithUtf8(filePath)) {
-			writer.write(GSON.toJson(defaultRawData,this.type));
+			writer.write(GSON.toJson(defaultRawData, this.type));
 		} catch (IOException e) {
 			throw new _IOException(e);
 		}
@@ -107,6 +108,7 @@ public class _JsonConfig<T> extends _JsonSupport {
 	 * <ul>
 	 *     Frequent use of this method is not recommended, as it can lead to unnecessary runtime errors.
 	 * </ul>
+	 *
 	 * @param data new data
 	 */
 	public void save(T data) {
@@ -114,7 +116,8 @@ public class _JsonConfig<T> extends _JsonSupport {
 		setSaveFile(data);
 		this.data = Optional.of(data);
 	}
-	public void save(Optional<T> data){
+
+	public void save(Optional<T> data) {
 		if (data == null) return;
 		save(data.orElse(defaultRawData));
 	}
@@ -129,78 +132,90 @@ public class _JsonConfig<T> extends _JsonSupport {
 		save(this.data);
 	}
 
-	public Optional<T> data(){
+	public Optional<T> data() {
 		return this.data;
 	}
 
 	/**
-	 * @deprecated
-	 * Retrieve data, returning the default raw data if it is unavailable.
+	 * @return (nullable) T
+	 * @deprecated Retrieve data, returning the default raw data if it is unavailable.
 	 * It is not recommended to use this method anymore.
-	 * @return T
 	 */
 	@Deprecated(since = "2.0.5")
 	public T getData() {
-		return data.orElse(defaultRawData);
+		return orElse(defaultRawData);
 	}
 
 
 	/**
 	 * Modify the existing data only, without saving it.
 	 * Must not be null.
+	 *
 	 * @param data new data
 	 */
-	public void setData(T data){
+	public void setData(T data) {
 		if (data == null) return;
 		this.data = Optional.of(data);
 	}
+
 	/**
 	 * Save without altering the existing data.
 	 */
-	public void setSaveFile(T data){
+	public void setSaveFile(T data) {
 		try (OutputStreamWriter writer = _File.startWriterWithUtf8(filePath)) {
-			GSON.toJson(data,this.type, writer);
+			GSON.toJson(data, this.type, writer);
 		} catch (IOException e) {
 			throw new _IOException(e);
 		}
 	}
 
 
-	public boolean isPresent(){
+	public boolean isPresent() {
 		return data.isPresent();
 	}
-	public void ifPresent(Consumer<? super T> action){
+
+	public void ifPresent(Consumer<? super T> action) {
 		data.ifPresent(action);
 	}
-	public <U> Optional<U> map(Function<? super T, ? extends U> mapper){
+
+	public <U> Optional<U> map(Function<? super T, ? extends U> mapper) {
 		return data.map(mapper);
 	}
-	public Optional<T> or(Supplier<Optional<? extends T>> supplier){
+
+	public Optional<T> or(Supplier<Optional<? extends T>> supplier) {
 		return data.or(supplier);
 	}
-	public T orElse(T other){
+
+	public T orElse(T other) {
 		return data.orElse(other);
 	}
-	public Optional<T> filter(Predicate<? super T> predicate){
+
+	public Optional<T> filter(Predicate<? super T> predicate) {
 		return data.filter(predicate);
 	}
-	public  <U> Optional<U> flatMap(Function<? super T, Optional<? extends U>> mapper){
+
+	public <U> Optional<U> flatMap(Function<? super T, Optional<? extends U>> mapper) {
 		return data.flatMap(mapper);
 	}
-	public boolean isEmpty(){
+
+	public boolean isEmpty() {
 		return data.isEmpty();
 	}
-	public T orElseGet(Supplier<? extends T> supplier){
+
+	public T orElseGet(Supplier<? extends T> supplier) {
 		return data.orElseGet(supplier);
 	}
-	public T orElseThrow(){
+
+	public T orElseThrow() {
 		return data.orElseThrow();
 	}
-	public <X extends Throwable> T orElseThrow(Supplier<? extends X> exceptionSupplier) throws X{
+
+	public <X extends Throwable> T orElseThrow(Supplier<? extends X> exceptionSupplier) throws X {
 		return data.orElseThrow(exceptionSupplier);
 	}
-	public void ifPresentOrElse(Consumer<? super T> action, Runnable emptyAction){
-		data.ifPresentOrElse(action,emptyAction);
+
+	public void ifPresentOrElse(Consumer<? super T> action, Runnable emptyAction) {
+		data.ifPresentOrElse(action, emptyAction);
 	}
 
 

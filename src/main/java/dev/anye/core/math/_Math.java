@@ -1,5 +1,7 @@
 package dev.anye.core.math;
 
+import dev.anye.core.exception._TargetException;
+
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,45 +24,75 @@ public class _Math extends _MathCDT {
 	}
 
 	/**
-	 * 将 v 的值限制在 [-PI,PI] 之间
+	 * Clamp the value of v to the range [-PI, PI].
 	 *
-	 * @param v 待运算值
-	 * @return 运算结果
+	 * @param v value
+	 * @return [-PI, PI]
 	 */
 	public static double pullBackWithPI(double v) {
+		while (v > PI) v = v - TWICE_PI;
+		while (v < -PI) v = v + TWICE_PI;
+		/*
 		if (v > PI) {
 			v = v - TWICE_PI;
 		}
 		if (v < -PI) {
 			v = v + TWICE_PI;
 		}
+
+		 */
 		return v;
 	}
 
 	/**
-	 * 超过给定值时返回 0
+	 * Returns 0 when greater than or equal to the given value.
 	 *
-	 * @param value 待判断值
-	 * @param max   给定最大值
-	 * @return 小于max时返回value,否则返回0
+	 * @param value test value
+	 * @param max   max value
+	 * @return returns value if less than max; otherwise, returns 0.
 	 */
 	public static int maxToZero(int value, int max) {
-		return maxToZero(value, max);
+		return value < max ? value : 0;
 	}
 
+	/**
+	 * Returns 0 when greater than or equal to the given value.
+	 *
+	 * @param value test value
+	 * @param max   max value
+	 * @return returns value if less than max; otherwise, returns 0.
+	 */
 	public static float maxToZero(float value, float max) {
-		value++;
-		if (value > max) {
-			return 0;
-		}
-		return value;
+		return value < max ? value : 0f;
 	}
 
-	public static int log(Float number, int base) {
-		return log(number, base);
+	/**
+	 * Returns 0 when greater than or equal to the given value.
+	 *
+	 * @param value test value
+	 * @param max   max value
+	 * @return returns value if less than max; otherwise, returns 0.
+	 */
+	public static long maxToZero(long value, long max) {
+		return value < max ? value : 0L;
 	}
 
-	public static int log(Double number, int base) {
+	/**
+	 * Returns 0 when greater than or equal to the given value.
+	 *
+	 * @param value test value
+	 * @param max   max value
+	 * @return returns value if less than max; otherwise, returns 0.
+	 */
+	public static double maxToZero(double value, double max) {
+		return value < max ? value : 0d;
+	}
+
+	public static int log(float number, int base) {
+		return log((double) number, base);
+	}
+
+	public static int log(double number, int base) {
 		int customBaseLog = 0;
 		double powerOfBase = 1.0;
 
@@ -78,11 +110,11 @@ public class _Math extends _MathCDT {
 	/**
 	 * 位运算计算log
 	 *
-	 * @param n
-	 * @return
+	 * @param n >= 1
+	 * @return log
 	 */
 	public static int log2Floor(int n) {
-		assert n >= 1;
+		if (n < 1) throw new _TargetException("Number must >= 1 At => " + n);
 		int log = 0;
 		if (n > 0xffff) {
 			n >>>= 16;
@@ -266,7 +298,8 @@ public class _Math extends _MathCDT {
 	}
 
 	public static class RD {
-		private RD() {}
+		private RD() {
+		}
 
 		public static Random random = new Random();
 

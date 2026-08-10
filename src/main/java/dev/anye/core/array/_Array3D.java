@@ -1,16 +1,15 @@
 package dev.anye.core.array;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 
-public class _Array3D<K, A, B> implements Iterable<_Array3D<K, A, B>.Entry>, Serializable {
-	private final ArrayList<K> keys;
-	private final ArrayList<A> as;
-	private final ArrayList<B> bs;
+public class _Array3D<K, A, B> implements Iterable<_Array3D<K, A, B>.Entry> {
+	private final List<K> keys;
+	private final List<A> as;
+	private final List<B> bs;
 	private int size = 0;
 
 	public _Array3D() {
@@ -20,7 +19,7 @@ public class _Array3D<K, A, B> implements Iterable<_Array3D<K, A, B>.Entry>, Ser
 		size = 0;
 	}
 
-	public _Array3D(ArrayList<K> keys, ArrayList<A> as, ArrayList<B> bs) {
+	public _Array3D(List<K> keys, List<A> as, List<B> bs) {
 		this.keys = keys;
 		this.as = as;
 		this.bs = bs;
@@ -141,6 +140,7 @@ public class _Array3D<K, A, B> implements Iterable<_Array3D<K, A, B>.Entry>, Ser
 		}
 	}
 
+	@Override
 	public void forEach(Consumer<? super Entry> action) {
 		for (Entry entry : this) {
 			action.accept(entry);

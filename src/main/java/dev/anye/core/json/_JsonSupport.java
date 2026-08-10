@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class _JsonSupport {
 	public static final Gson GSON = new Gson();
-	
+
 	public static void checkData(String sourceJson, String targetJsonFilePath) {
 		try {
 			JsonElement sourceJsonElement = JsonParser.parseString(sourceJson);

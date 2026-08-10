@@ -14,7 +14,9 @@ import java.util.logging.Logger;
 
 public class _Net {
 	public static final Logger logger = Logger.getLogger(_Net.class.getName());
-	private _Net() {}
+
+	private _Net() {
+	}
 
 	public static String urlEncode(String value) {
 		try {

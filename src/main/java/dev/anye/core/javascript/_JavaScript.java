@@ -4,7 +4,8 @@ import dev.anye.core.bytes._Byte;
 import dev.anye.core.exception._IOException;
 import dev.anye.core.system._File;
 
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,7 +43,7 @@ public abstract class _JavaScript<T extends _JavaScript<T, S>, S> {
 
 	public Object runCode(String key, String code) {
 		if (cache) {
-			return this.runCode(temp.computeIfAbsent(key,s -> getJsData(code)));
+			return this.runCode(temp.computeIfAbsent(key, s -> getJsData(code)));
 		} else {
 			return this.runCode(getJsData(code));
 		}

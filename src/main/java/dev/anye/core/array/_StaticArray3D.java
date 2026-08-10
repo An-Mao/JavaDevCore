@@ -17,11 +17,4 @@ public class _StaticArray3D<K, A, B> {
 		this.as = array3D.as;
 		this.bs = array3D.bs;
 	}
-
-	public _StaticArray3D(int size) {
-		keys = (K[]) new Object[size];
-		as = (A[]) new Object[size];
-		bs = (B[]) new Object[size];
-		size = 0;
-	}
 }

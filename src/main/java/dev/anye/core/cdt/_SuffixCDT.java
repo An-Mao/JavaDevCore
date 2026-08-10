@@ -1,7 +1,9 @@
 package dev.anye.core.cdt;
 
 public class _SuffixCDT {
-	private _SuffixCDT() {}
+	private _SuffixCDT() {
+	}
+
 	public static final String JSON_SUFFIX = ".json";
 	public static final String INI_SUFFIX = ".ini";
 	public static final String TOML_SUFFIX = ".toml";
