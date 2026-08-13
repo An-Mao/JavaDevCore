@@ -69,6 +69,4 @@ public class _GraalJS extends _JavaScript<_GraalJS, Source> {
 		return context.eval(code);
 	}
 
-	;
-
 }
