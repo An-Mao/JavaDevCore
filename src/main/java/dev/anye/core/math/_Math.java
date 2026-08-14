@@ -9,6 +9,19 @@ import java.util.Random;
 import java.util.Stack;
 
 public class _Math extends _MathCDT {
+
+	public static int abs(int v){
+		return (v + (v >> 31))^(v >> 31);
+	}
+
+	public static int average(int a,int b){
+		return (a & b)+((a^b) >> 1);
+	}
+
+
+
+
+
 	public static int half1(int i, int j) {
 		if (i % 2 > j) return i >> 1;
 		else return (i >> 1) + 1;
