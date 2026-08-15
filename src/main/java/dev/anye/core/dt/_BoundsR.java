@@ -25,7 +25,7 @@ public class _BoundsR extends _Bounds{
 		this.radius = radius;
 	}
 
-	public int range(){
+	public int radius(){
 		return radius;
 	}
 
