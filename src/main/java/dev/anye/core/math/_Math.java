@@ -18,6 +18,41 @@ public class _Math extends _MathCDT {
 		return (a & b)+((a^b) >> 1);
 	}
 
+	public static int _add(int a,int b){
+		return _add(a,b,0);
+	}
+	public static int _add(int a,int b,int d){
+		return Math.max(d,a + b);
+	}
+
+
+
+
+
+	public static int _add_(int a,int b){
+		return _add_(a,b,Integer.MIN_VALUE,Integer.MAX_VALUE);
+	}
+	public static int _add_(int a,int b,int min,int max){
+		int v = a + b;
+		if (a > 0){
+			if (b > 0) return v > 0 ? v : max;
+		}else {
+			if (b < 0) return v < 0 ? v : min;
+		}
+		return v;
+	}
+	public static int _sub_(int a,int b){
+		return _sub_(a,b,Integer.MIN_VALUE,Integer.MAX_VALUE);
+	}
+	public static int _sub_(int a,int b,int min,int max){
+		int v = a - b;
+		if (a > 0){
+			if (b < 0) return v > 0 ? v : max;
+		}else {
+			if (b > 0) return v < 0 ? v : min;
+		}
+		return v;
+	}
 
 
 
