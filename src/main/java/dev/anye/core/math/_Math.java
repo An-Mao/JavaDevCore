@@ -26,9 +26,21 @@ public class _Math extends _MathCDT {
 	}
 
 
+	public static double _addx_(Number a,Number b,Number min,Number max){
+		double av = a.doubleValue();
+		double bv = b.doubleValue();
+		double v = av + bv;
+		if (av > 0){
+			if (bv > 0) return v > 0 ? v : max.doubleValue();
+		}else {
+			if (bv < 0) return v < 0 ? v : min.doubleValue();
+		}
+		return v;
+	}
 
-
-
+	public static int _add_(int a,Number b){
+		return _add_(a,b.intValue(),Integer.MIN_VALUE,Integer.MAX_VALUE);
+	}
 	public static int _add_(int a,int b){
 		return _add_(a,b,Integer.MIN_VALUE,Integer.MAX_VALUE);
 	}
@@ -40,6 +52,60 @@ public class _Math extends _MathCDT {
 			if (b < 0) return v < 0 ? v : min;
 		}
 		return v;
+	}
+
+	public static float _add_(float a,Number b){
+		return _add_(a,b.floatValue(),Float.MIN_VALUE,Float.MAX_VALUE);
+	}
+	public static float _add_(float a,float b){
+		return _add_(a,b,Float.MIN_VALUE,Float.MAX_VALUE);
+	}
+	public static float _add_(float a,float b,float min,float max){
+		float v = a + b;
+		if (a > 0){
+			if (b > 0) return v > 0 ? v : max;
+		}else {
+			if (b < 0) return v < 0 ? v : min;
+		}
+		return v;
+	}
+
+	public static long _add_(long a,Number b){
+		return _add_(a,b.longValue(),Long.MIN_VALUE,Long.MAX_VALUE);
+	}
+	public static long _add_(long a,long b){
+		return _add_(a,b,Long.MIN_VALUE,Long.MAX_VALUE);
+	}
+	public static long _add_(long a,long b,long min,long max){
+		long v = a + b;
+		if (a > 0){
+			if (b > 0) return v > 0 ? v : max;
+		}else {
+			if (b < 0) return v < 0 ? v : min;
+		}
+		return v;
+	}
+
+	public static double _add_(double a,Number b){
+		return _add_(a,b.doubleValue(),Double.MIN_VALUE,Double.MAX_VALUE);
+	}
+	public static double _add_(double a,double b){
+		return _add_(a,b,Double.MIN_VALUE,Double.MAX_VALUE);
+	}
+	public static double _add_(double a,double b,double min,double max){
+		double v = a + b;
+		if (a > 0){
+			if (b > 0) return v > 0 ? v : max;
+		}else {
+			if (b < 0) return v < 0 ? v : min;
+		}
+		return v;
+	}
+
+
+
+	public static int _sub_(int a,Number b){
+		return _sub_(a,b.intValue(),Integer.MIN_VALUE,Integer.MAX_VALUE);
 	}
 	public static int _sub_(int a,int b){
 		return _sub_(a,b,Integer.MIN_VALUE,Integer.MAX_VALUE);
@@ -53,6 +119,55 @@ public class _Math extends _MathCDT {
 		}
 		return v;
 	}
+	public static long _sub_(long a,Number b){
+		return _sub_(a,b.longValue(),Long.MIN_VALUE,Long.MAX_VALUE);
+	}
+	public static long _sub_(long a,long b){
+		return _sub_(a,b,Long.MIN_VALUE,Long.MAX_VALUE);
+	}
+	public static long _sub_(long a,long b,long min,long max){
+		long v = a - b;
+		if (a > 0){
+			if (b < 0) return v > 0 ? v : max;
+		}else {
+			if (b > 0) return v < 0 ? v : min;
+		}
+		return v;
+	}
+
+	public static float _sub_(float a,Number b){
+		return _sub_(a,b.floatValue(),Float.MIN_VALUE,Float.MAX_VALUE);
+	}
+	public static float _sub_(float a,float b){
+		return _sub_(a,b,Float.MIN_VALUE,Float.MAX_VALUE);
+	}
+	public static float _sub_(float a,float b,float min,float max){
+		float v = a - b;
+		if (a > 0){
+			if (b < 0) return v > 0 ? v : max;
+		}else {
+			if (b > 0) return v < 0 ? v : min;
+		}
+		return v;
+	}
+
+	public static double _sub_(double a,Number b){
+		return _sub_(a,b.doubleValue(),Double.MIN_VALUE,Double.MAX_VALUE);
+	}
+
+	public static double _sub_(double a,double b){
+		return _sub_(a,b,Double.MIN_VALUE,Double.MAX_VALUE);
+	}
+	public static double _sub_(double a,double b,double min,double max){
+		double v = a - b;
+		if (a > 0){
+			if (b < 0) return v > 0 ? v : max;
+		}else {
+			if (b > 0) return v < 0 ? v : min;
+		}
+		return v;
+	}
+
 
 
 
