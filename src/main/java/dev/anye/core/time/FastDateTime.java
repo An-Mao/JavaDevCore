@@ -1,11 +1,14 @@
 package dev.anye.core.time;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.TimeZone;
 
 public final class FastDateTime {
 	private static final long DAY_MILLIS = 86_400_000L;
 	//private static final long DAY_SECONDS = 86_400L;
-	private static final long DEFAULT_OFFSET_MS = 8 * 3600_000L;
+	private static final long CN_OFFSET_MS = 8 * 3600_000L;
+	private static final long DEFAULT_OFFSET_MS = OffsetDateTime.now(ZoneId.systemDefault()).getOffset().getTotalSeconds() * 1000L;
 	//private static final ConcurrentHashMap<String, FastPattern> FORMAT_CACHE = new ConcurrentHashMap<>();
 
 	public long epochMillis;
