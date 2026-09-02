@@ -40,12 +40,13 @@ public final class FastDateTime {
 		setEpochMillis(epochMillis);
 	}
 
-	public void update(){
-		setEpochMillis(System.currentTimeMillis());
+	public FastDateTime update(){
+		return setEpochMillis(System.currentTimeMillis());
 	}
-	public void setEpochMillis(long epochMillis){
+	public FastDateTime setEpochMillis(long epochMillis){
 		this.epochMillis = epochMillis;
 		refresh();
+		return this;
 	}
 
 

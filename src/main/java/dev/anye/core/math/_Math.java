@@ -10,6 +10,11 @@ import java.util.Stack;
 
 public class _Math extends _MathCDT {
 
+	/**
+	 * 快速取绝对值
+	 * @param v 待取绝对值的整数
+	 * @return 绝对值
+	 */
 	public static int abs(int v){
 		return (v + (v >> 31))^(v >> 31);
 	}
