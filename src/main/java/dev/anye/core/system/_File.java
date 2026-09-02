@@ -9,7 +9,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 
-public class _File {
+public final class _File {
 	/**
 	 *
 	 * @param strings a ,b ,c

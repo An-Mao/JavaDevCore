@@ -1,6 +1,8 @@
 package dev.anye.core.time;
 
-public class FastDateTime {
+import java.util.TimeZone;
+
+public final class FastDateTime {
 	private static final long DAY_MILLIS = 86_400_000L;
 	//private static final long DAY_SECONDS = 86_400L;
 	private static final long DEFAULT_OFFSET_MS = 8 * 3600_000L;
@@ -27,12 +29,18 @@ public class FastDateTime {
 		this.offsetMillis = offsetMillis;
 		setEpochMillis(epochMillis);
 	}
+	public FastDateTime(TimeZone timeZone) {
+		this(System.currentTimeMillis(),timeZone);
+	}
+	public FastDateTime(long epochMillis, TimeZone timeZone) {
+		this.offsetMillis = timeZone.getOffset(epochMillis);
+		setEpochMillis(epochMillis);
+	}
 
 	public void update(){
 		setEpochMillis(System.currentTimeMillis());
 	}
 	public void setEpochMillis(long epochMillis){
-		//if (epochMillis == this.epochMillis)return;
 		this.epochMillis = epochMillis;
 		refresh();
 	}
