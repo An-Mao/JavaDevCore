@@ -130,4 +130,7 @@ public final class _File {
 	public static OutputStreamWriter startWriterWithUtf8(String file) throws FileNotFoundException {
 		return new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
 	}
+	public static OutputStreamWriter startWriterWithUtf8(Path file) throws FileNotFoundException {
+		return new OutputStreamWriter(new FileOutputStream(file.toFile()), StandardCharsets.UTF_8);
+	}
 }

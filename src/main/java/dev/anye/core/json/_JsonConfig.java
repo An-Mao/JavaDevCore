@@ -9,8 +9,8 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.lang.reflect.Type;
-import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -22,15 +22,14 @@ public class _JsonConfig<T> extends _JsonSupport {
 	private final T defaultRawData;
 	protected final Type type;
 	//Expose visibility to avoid the need for subclasses to customize.
-	protected volatile T data;
+	protected final AtomicReference<T> data;
 
-	private final Object lock = new Object();
 	public _JsonConfig(String filePath, T defaultRawData, TypeToken<T> typeToken, boolean checkData) {
 		this.filePath = filePath;
 		this.type = typeToken.getType();
 		this.defaultRawData = GSON.fromJson(GSON.toJson(defaultRawData), type);
 		this.checkData = checkData;
-		this.data = null;
+		this.data = new AtomicReference<>();
 		init();
 	}
 
@@ -72,7 +71,7 @@ public class _JsonConfig<T> extends _JsonSupport {
 		if (!file.exists()) {
 			reset();
 		} else {
-			if (defaultRawData != null && checkData) checkData(GSON.toJson(defaultRawData, type), filePath);
+			if (checkData) checkData(GSON.toJson(defaultRawData, type), filePath);
 		}
 		load();
 	}
@@ -86,7 +85,6 @@ public class _JsonConfig<T> extends _JsonSupport {
 	 * Directory existence is not checked; please ensure the provided path already exists.
 	 */
 	public void reset() {
-		if (defaultRawData == null) return;
 		try (OutputStreamWriter writer = _File.startWriterWithUtf8(filePath)) {
 			writer.write(GSON.toJson(defaultRawData, this.type));
 		} catch (IOException e) {
@@ -100,7 +98,7 @@ public class _JsonConfig<T> extends _JsonSupport {
 	 */
 	private void load() {
 		try (Reader reader = _File.loadFileWithUtf8(filePath)) {
-			data = GSON.fromJson(reader, this.type);
+			data.set(GSON.fromJson(reader, this.type));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -117,7 +115,7 @@ public class _JsonConfig<T> extends _JsonSupport {
 	public void save(T data) {
 		if (data == null) return;
 		setSaveFile(data);
-		this.data = data;
+		this.data.set(data);
 	}
 
 	/**
@@ -127,27 +125,25 @@ public class _JsonConfig<T> extends _JsonSupport {
 	 * </ul>
 	 */
 	public void save() {
-		save(this.data);
+		save(this.data.get());
 	}
 
-	public Optional<T> data() {
-		return Optional.ofNullable(this.data);
-	}
-	public T getDataOrDefault(T other) {
-		if (this.data == null) return other;
-		return this.data;
-	}
-
-	public T getDataOrDefault() {
-		return getDataOrDefault(defaultRawData);
-	}
 
 	/**
-	 * @return (nullable) T
+	 * Reads the current data while holding the data lock.
+	 * The action should execute quickly and should not perform blocking operations.
 	 */
-	public T getData() {
-		return data;
+	public void read(Consumer<? super T> action) {
+		if (data.get() != null) {
+			action.accept(data.get());
+		}
+
 	}
+
+	public <R> R read(Function<? super T, ? extends R> function) {
+		return data == null ? null : function.apply(data.get());
+	}
+
 	/**
 	 * Modify the existing data only, without saving it.
 	 * Must not be null.
@@ -156,8 +152,10 @@ public class _JsonConfig<T> extends _JsonSupport {
 	 */
 	public void setData(T data) {
 		if (data == null) return;
-		this.data = data;
+		this.data.set(data);
 	}
+
+
 
 	/**
 	 * Save without altering the existing data.
@@ -169,81 +167,5 @@ public class _JsonConfig<T> extends _JsonSupport {
 			throw new _IOException(e);
 		}
 	}
-
-
-	public boolean isPresent() {
-		return data != null;
-	}
-
-	public void ifPresent(Consumer<? super T> action) {
-		if (data != null) {
-			action.accept(data);
-		}
-	}
-
-	@Deprecated(since = "2.0.6")
-	public <U> Optional<U> map(Function<? super T, ? extends U> mapper) {
-		return Optional.ofNullable(mapper.apply(data));
-	}
-
-	@Deprecated(since = "2.0.6")
-	public Optional<T> or(Supplier<Optional<? extends T>> supplier) {
-		if (isPresent()) return Optional.of(data);
-		return (Optional<T>) supplier.get();
-	}
-
-	@Deprecated(since = "2.0.6")
-	public T orElse(T other) {
-		return getDataOrDefault(other);
-	}
-
-	@Deprecated(since = "2.0.6")
-	public Optional<T> filter(Predicate<? super T> predicate) {
-		if (this.data == null) return Optional.empty();
-		return predicate.test(data) ? Optional.of(data) : Optional.empty();
-	}
-
-	@Deprecated(since = "2.0.6")
-	public <U> Optional<U> flatMap(Function<? super T, Optional<? extends U>> mapper) {
-		if (this.data == null) return Optional.empty();
-		return (Optional<U>) mapper.apply(data);
-	}
-
-	@Deprecated(since = "2.0.6")
-	public boolean isEmpty() {
-		return data == null;
-	}
-
-	@Deprecated(since = "2.0.6")
-	public T orElseGet(Supplier<? extends T> supplier) {
-		return data != null ? data : supplier.get();
-	}
-
-	@Deprecated(since = "2.0.6")
-	public T orElseThrow() {
-		if (data == null) {
-			throw new NoSuchElementException("No value present");
-		}
-		return data;
-	}
-
-	@Deprecated(since = "2.0.6")
-	public <X extends Throwable> T orElseThrow(Supplier<? extends X> exceptionSupplier) throws X {
-		if (data != null) {
-			return data;
-		} else {
-			throw exceptionSupplier.get();
-		}
-	}
-
-	@Deprecated(since = "2.0.6")
-	public void ifPresentOrElse(Consumer<? super T> action, Runnable emptyAction) {
-		if (data != null) {
-			action.accept(data);
-		} else {
-			emptyAction.run();
-		}
-	}
-
 
 }
