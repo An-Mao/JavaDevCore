@@ -95,7 +95,7 @@ public class _Byte {
 	public static byte[] decompress(byte[] compressedData) throws IOException {
 		ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(compressedData);
 		try (InflaterInputStream inflaterInputStream = new InflaterInputStream(byteArrayInputStream);
-		     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+			 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
 			byte[] buffer = new byte[1024];
 			int len;
 			while ((len = inflaterInputStream.read(buffer)) > 0) {
@@ -126,7 +126,7 @@ public class _Byte {
 	public static byte[] gzDecompress(byte[] compressedData) throws IOException {
 		ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(compressedData);
 		try (GZIPInputStream gzipInputStream = new GZIPInputStream(byteArrayInputStream);
-		     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+			 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
 			byte[] buffer = new byte[1024];
 			int len;
 			while ((len = gzipInputStream.read(buffer)) > 0) {

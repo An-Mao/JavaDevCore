@@ -12,169 +12,183 @@ public class _Math extends _MathCDT {
 
 	/**
 	 * 快速取绝对值
+	 *
 	 * @param v 待取绝对值的整数
 	 * @return 绝对值
 	 */
-	public static int abs(int v){
-		return (v + (v >> 31))^(v >> 31);
+	public static int abs(int v) {
+		return (v + (v >> 31)) ^ (v >> 31);
 	}
 
-	public static int average(int a,int b){
-		return (a & b)+((a^b) >> 1);
+	public static int average(int a, int b) {
+		return (a & b) + ((a ^ b) >> 1);
 	}
 
-	public static int _add(int a,int b){
-		return _add(a,b,0);
+	public static int _add(int a, int b) {
+		return _add(a, b, 0);
 	}
-	public static int _add(int a,int b,int d){
-		return Math.max(d,a + b);
+
+	public static int _add(int a, int b, int d) {
+		return Math.max(d, a + b);
 	}
 
 
-	public static double _addx_(Number a,Number b,Number min,Number max){
+	public static double _addx_(Number a, Number b, Number min, Number max) {
 		double av = a.doubleValue();
 		double bv = b.doubleValue();
 		double v = av + bv;
-		if (av > 0){
+		if (av > 0) {
 			if (bv > 0) return v > 0 ? v : max.doubleValue();
-		}else {
+		} else {
 			if (bv < 0) return v < 0 ? v : min.doubleValue();
 		}
 		return v;
 	}
 
-	public static int _add_(int a,Number b){
-		return _add_(a,b.intValue(),Integer.MIN_VALUE,Integer.MAX_VALUE);
+	public static int _add_(int a, Number b) {
+		return _add_(a, b.intValue(), Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
-	public static int _add_(int a,int b){
-		return _add_(a,b,Integer.MIN_VALUE,Integer.MAX_VALUE);
+
+	public static int _add_(int a, int b) {
+		return _add_(a, b, Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
-	public static int _add_(int a,int b,int min,int max){
+
+	public static int _add_(int a, int b, int min, int max) {
 		int v = a + b;
-		if (a > 0){
+		if (a > 0) {
 			if (b > 0) return v > 0 ? v : max;
-		}else {
+		} else {
 			if (b < 0) return v < 0 ? v : min;
 		}
 		return v;
 	}
 
-	public static float _add_(float a,Number b){
-		return _add_(a,b.floatValue(),Float.MIN_VALUE,Float.MAX_VALUE);
+	public static float _add_(float a, Number b) {
+		return _add_(a, b.floatValue(), Float.MIN_VALUE, Float.MAX_VALUE);
 	}
-	public static float _add_(float a,float b){
-		return _add_(a,b,Float.MIN_VALUE,Float.MAX_VALUE);
+
+	public static float _add_(float a, float b) {
+		return _add_(a, b, Float.MIN_VALUE, Float.MAX_VALUE);
 	}
-	public static float _add_(float a,float b,float min,float max){
+
+	public static float _add_(float a, float b, float min, float max) {
 		float v = a + b;
-		if (a > 0){
+		if (a > 0) {
 			if (b > 0) return v > 0 ? v : max;
-		}else {
+		} else {
 			if (b < 0) return v < 0 ? v : min;
 		}
 		return v;
 	}
 
-	public static long _add_(long a,Number b){
-		return _add_(a,b.longValue(),Long.MIN_VALUE,Long.MAX_VALUE);
+	public static long _add_(long a, Number b) {
+		return _add_(a, b.longValue(), Long.MIN_VALUE, Long.MAX_VALUE);
 	}
-	public static long _add_(long a,long b){
-		return _add_(a,b,Long.MIN_VALUE,Long.MAX_VALUE);
+
+	public static long _add_(long a, long b) {
+		return _add_(a, b, Long.MIN_VALUE, Long.MAX_VALUE);
 	}
-	public static long _add_(long a,long b,long min,long max){
+
+	public static long _add_(long a, long b, long min, long max) {
 		long v = a + b;
-		if (a > 0){
+		if (a > 0) {
 			if (b > 0) return v > 0 ? v : max;
-		}else {
+		} else {
 			if (b < 0) return v < 0 ? v : min;
 		}
 		return v;
 	}
 
-	public static double _add_(double a,Number b){
-		return _add_(a,b.doubleValue(),Double.MIN_VALUE,Double.MAX_VALUE);
+	public static double _add_(double a, Number b) {
+		return _add_(a, b.doubleValue(), Double.MIN_VALUE, Double.MAX_VALUE);
 	}
-	public static double _add_(double a,double b){
-		return _add_(a,b,Double.MIN_VALUE,Double.MAX_VALUE);
+
+	public static double _add_(double a, double b) {
+		return _add_(a, b, Double.MIN_VALUE, Double.MAX_VALUE);
 	}
-	public static double _add_(double a,double b,double min,double max){
+
+	public static double _add_(double a, double b, double min, double max) {
 		double v = a + b;
-		if (a > 0){
+		if (a > 0) {
 			if (b > 0) return v > 0 ? v : max;
-		}else {
+		} else {
 			if (b < 0) return v < 0 ? v : min;
 		}
 		return v;
 	}
 
 
+	public static int _sub_(int a, Number b) {
+		return _sub_(a, b.intValue(), Integer.MIN_VALUE, Integer.MAX_VALUE);
+	}
 
-	public static int _sub_(int a,Number b){
-		return _sub_(a,b.intValue(),Integer.MIN_VALUE,Integer.MAX_VALUE);
+	public static int _sub_(int a, int b) {
+		return _sub_(a, b, Integer.MIN_VALUE, Integer.MAX_VALUE);
 	}
-	public static int _sub_(int a,int b){
-		return _sub_(a,b,Integer.MIN_VALUE,Integer.MAX_VALUE);
-	}
-	public static int _sub_(int a,int b,int min,int max){
+
+	public static int _sub_(int a, int b, int min, int max) {
 		int v = a - b;
-		if (a > 0){
+		if (a > 0) {
 			if (b < 0) return v > 0 ? v : max;
-		}else {
+		} else {
 			if (b > 0) return v < 0 ? v : min;
 		}
 		return v;
 	}
-	public static long _sub_(long a,Number b){
-		return _sub_(a,b.longValue(),Long.MIN_VALUE,Long.MAX_VALUE);
+
+	public static long _sub_(long a, Number b) {
+		return _sub_(a, b.longValue(), Long.MIN_VALUE, Long.MAX_VALUE);
 	}
-	public static long _sub_(long a,long b){
-		return _sub_(a,b,Long.MIN_VALUE,Long.MAX_VALUE);
+
+	public static long _sub_(long a, long b) {
+		return _sub_(a, b, Long.MIN_VALUE, Long.MAX_VALUE);
 	}
-	public static long _sub_(long a,long b,long min,long max){
+
+	public static long _sub_(long a, long b, long min, long max) {
 		long v = a - b;
-		if (a > 0){
+		if (a > 0) {
 			if (b < 0) return v > 0 ? v : max;
-		}else {
+		} else {
 			if (b > 0) return v < 0 ? v : min;
 		}
 		return v;
 	}
 
-	public static float _sub_(float a,Number b){
-		return _sub_(a,b.floatValue(),Float.MIN_VALUE,Float.MAX_VALUE);
+	public static float _sub_(float a, Number b) {
+		return _sub_(a, b.floatValue(), Float.MIN_VALUE, Float.MAX_VALUE);
 	}
-	public static float _sub_(float a,float b){
-		return _sub_(a,b,Float.MIN_VALUE,Float.MAX_VALUE);
+
+	public static float _sub_(float a, float b) {
+		return _sub_(a, b, Float.MIN_VALUE, Float.MAX_VALUE);
 	}
-	public static float _sub_(float a,float b,float min,float max){
+
+	public static float _sub_(float a, float b, float min, float max) {
 		float v = a - b;
-		if (a > 0){
+		if (a > 0) {
 			if (b < 0) return v > 0 ? v : max;
-		}else {
+		} else {
 			if (b > 0) return v < 0 ? v : min;
 		}
 		return v;
 	}
 
-	public static double _sub_(double a,Number b){
-		return _sub_(a,b.doubleValue(),Double.MIN_VALUE,Double.MAX_VALUE);
+	public static double _sub_(double a, Number b) {
+		return _sub_(a, b.doubleValue(), Double.MIN_VALUE, Double.MAX_VALUE);
 	}
 
-	public static double _sub_(double a,double b){
-		return _sub_(a,b,Double.MIN_VALUE,Double.MAX_VALUE);
+	public static double _sub_(double a, double b) {
+		return _sub_(a, b, Double.MIN_VALUE, Double.MAX_VALUE);
 	}
-	public static double _sub_(double a,double b,double min,double max){
+
+	public static double _sub_(double a, double b, double min, double max) {
 		double v = a - b;
-		if (a > 0){
+		if (a > 0) {
 			if (b < 0) return v > 0 ? v : max;
-		}else {
+		} else {
 			if (b > 0) return v < 0 ? v : min;
 		}
 		return v;
 	}
-
-
-
 
 
 	public static int half1(int i, int j) {

@@ -8,25 +8,19 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
-import java.lang.reflect.Type;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 
-public class _JsonConfig<T> extends _JsonSupport {
+public class _JsonConfig<T> extends _JsonCore<T> {
 	protected final boolean checkData;
-	protected final String filePath;
 	private final T defaultRawData;
-	protected final Type type;
 	//Expose visibility to avoid the need for subclasses to customize.
 	protected final AtomicReference<T> data;
 
 	public _JsonConfig(String filePath, T defaultRawData, TypeToken<T> typeToken, boolean checkData) {
-		this.filePath = filePath;
-		this.type = typeToken.getType();
+		super(filePath,typeToken);
 		this.defaultRawData = GSON.fromJson(GSON.toJson(defaultRawData), type);
 		this.checkData = checkData;
 		this.data = new AtomicReference<>();
@@ -71,7 +65,7 @@ public class _JsonConfig<T> extends _JsonSupport {
 		if (!file.exists()) {
 			reset();
 		} else {
-			if (checkData) checkData(GSON.toJson(defaultRawData, type), filePath);
+			if (checkData) _JsonSupport.mergeDefaultData(GSON.toJsonTree(defaultRawData, type), filePath);
 		}
 		load();
 	}
@@ -154,7 +148,6 @@ public class _JsonConfig<T> extends _JsonSupport {
 		if (data == null) return;
 		this.data.set(data);
 	}
-
 
 
 	/**

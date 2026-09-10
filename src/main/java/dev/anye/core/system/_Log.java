@@ -1,41 +1,28 @@
 package dev.anye.core.system;
 
+import dev.anye.core.exception._IOException;
+import dev.anye.core.time.FastDateTime;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class _Log {
-	// ANSI color codes
-	public static final String RESET = "\u001B[0m";
-	public static final String BLACK = "\u001B[30m";
-	public static final String RED = "\u001B[31m";
-	public static final String GREEN = "\u001B[32m";
-	public static final String YELLOW = "\u001B[33m";
-	public static final String BLUE = "\u001B[34m";
-	public static final String PURPLE = "\u001B[35m";
-	public static final String CYAN = "\u001B[36m";
-	public static final String WHITE = "\u001B[37m";
+public class _Log implements _LogCore{
+	public static final FastDateTime TIME = new FastDateTime();
 
-	public boolean Debug = false;
-	private final BlockingQueue<String> logQueue = new LinkedBlockingQueue<>();
-	private String logFile;
-	private final boolean ENABLE_COLOR;
-	private final Thread logThread = new Thread(() -> {
-		try (BufferedWriter writer = new BufferedWriter(new FileWriter(logFile, true))) {
-			while (true) {
-				String log = logQueue.take();
-				writer.write(log);
-				writer.newLine();
-				writer.flush();
-			}
-		} catch (IOException | InterruptedException e) {
-			System.err.println(RED + "[Log Error] log write error：" + e.getMessage() + RESET);
-		}
-	});
+	protected final BlockingQueue<String> logQueue;
+
+	protected final Thread logThread ;
+
+	protected final boolean color;
+	protected final String infoColor;
+	protected final String warnColor;
+	protected final String errorColor;
+	protected final String debugColor;
+
+	protected boolean debug = false;
 
 
 	public _Log() {
@@ -45,64 +32,96 @@ public class _Log {
 	public _Log(String logFile) {
 		this(logFile, isAnsiSupported());
 	}
-
-	public _Log(String logFile, boolean color) {
-		this.logFile = logFile;
-		ENABLE_COLOR = color;
-		if (!this.logFile.isEmpty()) setLogFile(logFile);
+	public _Log(String logFile,boolean color) {
+		this(logFile, color,_LogColor.GREEN,_LogColor.YELLOW,_LogColor.RED,_LogColor.CYAN);
+	}
+	public _Log(String logFile,String infoColor,String warnColor,String errorColor,String debugColor) {
+		this(logFile,true,infoColor,warnColor,errorColor,debugColor);
 	}
 
-	public void setLogFile(String logFile) {
-		if (logFile.isEmpty()) logThread.interrupt();
+	public _Log(String logFile, boolean color,String infoColor,String warnColor,String errorColor,String debugColor) {
+		this.color = color;
+		this.infoColor = infoColor;
+		this.warnColor = warnColor;
+		this.errorColor = errorColor;
+		this.debugColor = debugColor;
+		this.logQueue = new LinkedBlockingQueue<>();
 
-		this.logFile = logFile;
-		if (!logFile.isEmpty() && !logThread.isAlive()) {
+
+		if (logFile != null && !logFile.isEmpty()){
+			logThread = new Thread(() -> {
+				try (BufferedWriter writer = new BufferedWriter(new FileWriter(logFile, true))) {
+					while (true) {
+						String log = logQueue.take();
+						writer.write(log);
+						writer.newLine();
+						writer.flush();
+					}
+				} catch (IOException e) {
+					throw new _IOException(e);
+				}catch (InterruptedException e){
+					_error("[Log Error] log write error：" + e.getMessage());
+					Thread.currentThread().interrupt();
+				}
+			});
+
 			logThread.setDaemon(true);
 			logThread.start();
+		}else {
+			logThread = null;
 		}
+
 	}
 
-	public void info(String... msg) {
-		log(ENABLE_COLOR ? GREEN : "", "Info", msg);
+	public void setDebug(boolean debug) {
+		this.debug = debug;
 	}
 
-	public void error(String... msg) {
-		log(ENABLE_COLOR ? RED : "", "Error", msg);
+	public void close() {
+		if (threadIsAlive()) logThread.interrupt();
 	}
 
-	public void warn(String... msg) {
-		log(ENABLE_COLOR ? YELLOW : "", "Warn", msg);
+	public static void _error(String msg){
+		System.err.println(msg);
 	}
 
-	public void debug(String... msg) {
-		if (!Debug) return;
-		StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
-		String className = "UnknownClass";
-		String methodName = "UnknownMethod";
-		if (stackTraceElements.length >= 3) {
-			className = stackTraceElements[2].getClassName();
-			methodName = stackTraceElements[2].getMethodName();
+	public void writeLog(String log) {
+		if (threadIsAlive() && !logQueue.offer(log)) {
+			_error("[!log error! can't add log to queue.]");
 		}
-		log(ENABLE_COLOR ? CYAN : "", "Debug(" + className + ":" + methodName + ")", msg);
+
 	}
 
-	private void log(String color, String level, String... msg) {
-		for (String s : msg) {
-			String formattedLog = String.format("%s[%s][%s]%s", color, getTime(), level, s);
-			String plainLog = String.format("[%s][%s]%s", getTime(), level, s);
-
-			System.out.println(ENABLE_COLOR ? formattedLog + RESET : plainLog);
-
-			if (!this.logFile.isEmpty()) logQueue.offer(plainLog);
-		}
+	public boolean threadIsAlive(){
+		return logThread != null && logThread.isAlive();
 	}
 
-	private static String getTime() {
-		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-		return sdf.format(new Date());
+	protected void log(String logColor, String level, String msg) {
+		if (this.color){
+			String formattedLog = String.format("%s[%s][%s]%s", logColor, getTime(), level, msg);
+			System.out.println(formattedLog + _LogColor.RESET);
+
+			writeLog(String.format("[%s][%s]%s", getTime(), level, msg));
+		}else log(level,msg);
 	}
 
-	private static boolean isWindowsAnsiSupported() {
+
+	protected void log(String level, String msg) {
+		String plainLog = String.format("[%s][%s]%s", getTime(), level, msg);
+		System.out.println(plainLog);
+
+		writeLog(plainLog);
+	}
+
+
+	protected String getTime() {
+		/*SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+		return sdf.format(new Date());*/
+		return TIME.update().toTimeString(":");
+	}
+
+
+	public static boolean isWindowsAnsiSupported() {
 		String os = System.getProperty("os.name").toLowerCase();
 		if (!os.contains("win")) {
 			return false;
@@ -123,12 +142,11 @@ public class _Log {
 		return false;
 	}
 
-	private static boolean testAnsiColorSupport() {
+	public static boolean testAnsiColorSupport() {
 		try {
-
-			System.out.print(PURPLE);
+			System.out.print(_LogColor.PURPLE);
 			System.out.print("Check ANSI color support");
-			System.out.print("\u001B[0m");
+			System.out.print(_LogColor.RESET);
 			System.out.println();
 			return true;
 		} catch (Exception e) {
@@ -136,7 +154,7 @@ public class _Log {
 		}
 	}
 
-	private static boolean isAnsiSupported() {
+	public static boolean isAnsiSupported() {
 		String os = System.getProperty("os.name").toLowerCase();
 		if (os.contains("win")) {
 			return isWindowsAnsiSupported() && testAnsiColorSupport();
@@ -145,4 +163,50 @@ public class _Log {
 		return term != null && !term.equals("dumb");
 	}
 
+	public String format(String msg, Object... param) {
+		if (param.length > 0) {
+			StringBuilder builder = new StringBuilder();
+			for (Object p : param) {
+				int i = msg.indexOf("{}");
+				if (i != -1) {
+					builder.append(msg.substring(0, i)).append(p.toString());
+					msg = msg.substring(i + 2);
+				} else {
+					break;
+				}
+			}
+			if (!msg.equals("")) {
+				builder.append(msg);
+			}
+			return builder.toString();
+		}
+		return msg;
+	}
+
+	@Override
+	public void info(String msg, Object... param) {
+		log(infoColor, "Info", format(msg,param));
+	}
+	@Override
+	public void warn(String msg, Object... param) {
+
+		log(warnColor, "Warn", format(msg,param));
+	}
+	@Override
+	public void error(String msg, Object... param) {
+		log(errorColor, "Error", format(msg,param));
+	}
+	@Override
+	public void debug(String msg, Object... param) {
+		if (debug) {
+			StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+			String className = "UnknownClass";
+			String methodName = "UnknownMethod";
+			if (stackTraceElements.length >= 3) {
+				className = stackTraceElements[2].getClassName();
+				methodName = stackTraceElements[2].getMethodName();
+			}
+			log(debugColor, "Debug", "(" + className + ":" + methodName + ")" + format(msg, param));
+		}
+	}
 }

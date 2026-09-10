@@ -14,118 +14,133 @@ public class _Bounds {
 	private int width;
 	private int height;
 
-	public _Bounds(_Bounds bounds){
+	public _Bounds(_Bounds bounds) {
 		this(bounds.minX, bounds.minY, bounds.maxX, bounds.maxY);
 	}
-	public _Bounds(){
-		this(0,0,0,0);
+
+	public _Bounds() {
+		this(0, 0, 0, 0);
 	}
-	public _Bounds(int minX, int minY, int maxX, int maxY){
-		set(minX,minY,maxX,maxY);
+
+	public _Bounds(int minX, int minY, int maxX, int maxY) {
+		set(minX, minY, maxX, maxY);
 	}
 
 
-	public boolean include(int x, int y){
+	public boolean include(int x, int y) {
 		return _Math.abs(centerX - x) <= width && _Math.abs(centerY - y) <= height;
 	}
 
-	public boolean include(int x, int y, int offset){
+	public boolean include(int x, int y, int offset) {
 		return _Math.abs(centerX - x) <= width + offset && _Math.abs(centerY - y) <= height + offset;
 	}
 
 
-
-
-	public void upX(){
+	public void upX() {
 		width = maxX - minX;
 		centerX = minX + (width >> 1);
 	}
-	public void upY(){
+
+	public void upY() {
 		height = maxY - minY;
 		centerY = minY + (height >> 1);
 	}
-	public void up(){
+
+	public void up() {
 		upX();
 		upY();
 	}
 
-	public void setMinX(int minX){
+	public void setMinX(int minX) {
 		this.minX = minX;
 		upX();
 	}
+
 	public void setMinY(int minY) {
 		this.minY = minY;
 		upY();
 	}
+
 	public void setMaxX(int maxX) {
 		this.maxX = maxX;
 		upX();
 	}
+
 	public void setMaxY(int maxY) {
 		this.maxY = maxY;
 		upY();
 	}
 
 
-	public void setY(int minY,int maxY){
+	public void setY(int minY, int maxY) {
 		this.minY = minY;
 		this.maxY = maxY;
 		upY();
 	}
-	public void setX(int minX,int maxX){
+
+	public void setX(int minX, int maxX) {
 		this.minX = minX;
 		this.maxX = maxX;
 		upX();
 	}
-	public void setMax(int maxX,int maxY){
-		this.maxX = maxX;
-		this.maxY = maxY;
-		up();
-	}
-	public void setMin(int minX,int minY){
-		this.minX = minX;
-		this.minY = minY;
-		up();
-	}
 
-	public void set(int minX, int minY, int maxX, int maxY){
-		this.minX = minX;
-		this.minY = minY;
+	public void setMax(int maxX, int maxY) {
 		this.maxX = maxX;
 		this.maxY = maxY;
 		up();
 	}
 
-	public void replace(_Bounds bounds){
+	public void setMin(int minX, int minY) {
+		this.minX = minX;
+		this.minY = minY;
+		up();
+	}
+
+	public void set(int minX, int minY, int maxX, int maxY) {
+		this.minX = minX;
+		this.minY = minY;
+		this.maxX = maxX;
+		this.maxY = maxY;
+		up();
+	}
+
+	public void replace(_Bounds bounds) {
 		set(bounds.minX, bounds.minY, bounds.maxX, bounds.maxY);
 	}
 
-	public _Bounds copy(){
+	public _Bounds copy() {
 		return new _Bounds(this);
 	}
 
-	public int minX(){
+	public int minX() {
 		return minX;
 	}
-	public int minY(){
+
+	public int minY() {
 		return minY;
 	}
-	public int maxX(){
+
+	public int maxX() {
 		return maxX;
 	}
-	public int maxY(){
+
+	public int maxY() {
 		return maxY;
 	}
+
 	public int centerX() {
 		return centerX;
 	}
+
 	public int centerY() {
 		return centerY;
 	}
-	public int width(){
+
+	public int width() {
 		return width;
 	}
-	public int height(){
+
+	public int height() {
 		return height;
 	}
 

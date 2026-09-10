@@ -8,21 +8,15 @@ import dev.anye.core.system._File;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
-import java.lang.reflect.Type;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 
-public abstract class _JsonConfigX<T> extends _JsonSupport {
+public abstract class _JsonConfigX<T> extends _JsonCore<T> {
 	protected final boolean checkData;
-	protected final String filePath;
 	private final String defaultRawDataBase;
 	private final T defaultRawData;
-	protected final Type type;
 
 	protected final AtomicReference<T> data = new AtomicReference<>();
 
@@ -30,8 +24,7 @@ public abstract class _JsonConfigX<T> extends _JsonSupport {
 	private final Object fileLock = new Object();
 
 	protected _JsonConfigX(String filePath, T defaultRawData, TypeToken<T> typeToken, boolean checkData) {
-		this.filePath = filePath;
-		this.type = typeToken.getType();
+		super(filePath,typeToken.getType());
 
 		defaultRawDataBase = GSON.toJson(defaultRawData);
 		this.defaultRawData = GSON.fromJson(defaultRawDataBase, type);
@@ -43,34 +36,10 @@ public abstract class _JsonConfigX<T> extends _JsonSupport {
 		this(filePath, defaultData, typeToken, true);
 	}
 
-	/**
-	 * @param filePath    filePath
-	 * @param defaultData defaultData
-	 * @param typeToken   typeToken
-	 * @deprecated Using this method is no longer recommended, as it may entail numerous issues;
-	 */
-	@Deprecated(since = "2.0.5")
-	@SuppressWarnings("unchecked")
-	protected _JsonConfigX(String filePath, String defaultData, TypeToken<T> typeToken, boolean checkData) {
-
-		this(filePath, (T) GSON.fromJson(defaultData, typeToken.getType()), typeToken, checkData);
-	}
-
-	/**
-	 * @param filePath    filePath
-	 * @param defaultData defaultData
-	 * @param typeToken   typeToken
-	 * @deprecated Using this method is no longer recommended, as it may entail numerous issues;
-	 */
-	@Deprecated(since = "2.0.5")
-	protected _JsonConfigX(String filePath, String defaultData, TypeToken<T> typeToken) {
-		this(filePath, defaultData, typeToken, true);
-	}
-
 
 	/**
 	 * Initial loading
-	 * <li>When {@link _JsonConfigX#mergeDefaultData} is enabled, parts that do not conform to the default data format will be replaced.
+	 * <li>When {@link _JsonConfigX#checkData} is enabled, parts that do not conform to the default data format will be replaced.
 	 */
 	public void init() {
 		synchronized (fileLock) {
@@ -79,23 +48,18 @@ public abstract class _JsonConfigX<T> extends _JsonSupport {
 				reset();
 			} else {
 				if (defaultRawData != null && checkData)
-					mergeDefaultData(GSON.toJsonTree(defaultRawData, type), filePath);
+					_JsonSupport.mergeDefaultData(GSON.toJsonTree(defaultRawData, type), filePath);
 			}
 			load();
 		}
 	}
 
-
-
-	/*public void reload() {
-		load();
-
-	}*/
 	public void reload() {
 		synchronized (fileLock) {
 			load();
 		}
 	}
+
 	/**
 	 * Overwrite the original content with default data.
 	 * Directory existence is not checked; please ensure the provided path already exists.
@@ -103,28 +67,12 @@ public abstract class _JsonConfigX<T> extends _JsonSupport {
 	public void reset() {
 		if (defaultRawData == null) return;
 		save(GSON.fromJson(defaultRawDataBase, this.type));
-			/*try (OutputStreamWriter writer = _File.startWriterWithUtf8(filePath)) {
-				writer.write(GSON.toJson(defaultRawData, this.type));
-			} catch (IOException e) {
-				throw new _IOException(e);
-			}*/
-
 	}
 
 	/**
 	 * Loads file data and throws an exception if the data is null; please verify that the structure matches the expected type.
 	 * Before loading completes, the data remains the old data (or {@link Optional#empty} if it is the initial load).
 	 */
-	/*private void load() {
-		try (Reader reader = _File.loadFileWithUtf8(filePath)) {
-			T newData = GSON.fromJson(reader, type);
-			if (newData != null){
-				data.set(newData);
-			}
-		} catch (IOException e) {
-			throw new _IOException(e);
-		}
-	}*/
 	private void load() {
 		final T newData;
 
@@ -138,6 +86,7 @@ public abstract class _JsonConfigX<T> extends _JsonSupport {
 			data.set(newData);
 		}
 	}
+
 	/**
 	 * Save new data to file and update memory.
 	 * <ul>
@@ -161,33 +110,6 @@ public abstract class _JsonConfigX<T> extends _JsonSupport {
 			}
 		}
 	}
-	/*public void save(T newData) {
-		if (newData == null) {
-			return;
-		}
-
-		final JsonElement json;
-
-		synchronized (dataLock) {
-			T value = data.get();
-
-			if (value == null) {
-				return;
-			}
-
-			json = GSON.toJsonTree(value, type);
-		}
-
-		synchronized (fileLock) {
-			saveJsonToFile(json);
-			data.set(newData);
-		}
-	}*/
-	/*public void save(T data) {
-		if (data == null) return;
-		setSaveFile(data);
-		this.data.set(data);
-	}*/
 
 	/**
 	 * Save existing data to a file and load it.
@@ -281,7 +203,7 @@ public abstract class _JsonConfigX<T> extends _JsonSupport {
 	 */
 	protected void saveJsonToFile(JsonElement json) {
 		try {
-			writeJsonToFile(json, filePath);
+			_JsonSupport.writeJsonToFile(json, filePath);
 		} catch (IOException e) {
 			throw new _IOException(e);
 		}

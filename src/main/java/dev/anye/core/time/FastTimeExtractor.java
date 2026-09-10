@@ -3,14 +3,15 @@ package dev.anye.core.time;
 public final class FastTimeExtractor {
 	private static final long TIMEZONE_OFFSET_MS = 8 * 3600 * 1000L;
 
-	private FastTimeExtractor(){}
+	private FastTimeExtractor() {
+	}
 
 
 	public static long getPackedTime(long epochMillis) {
-		return getPackedTime(epochMillis,TIMEZONE_OFFSET_MS);
+		return getPackedTime(epochMillis, TIMEZONE_OFFSET_MS);
 	}
 
-	public static long getPackedTime(long epochMillis,long area) {
+	public static long getPackedTime(long epochMillis, long area) {
 		long localMillis = epochMillis + area;
 		long localSeconds = localMillis / 1000;
 		//int millisecond = (int) (localMillis % 1000);
@@ -43,16 +44,33 @@ public final class FastTimeExtractor {
 				| (second);
 	}
 
-	public static int getYear(long packed)   { return (int) ((packed >> 26) & 0x3FFF); }
-	public static int getMonth(long packed)  { return (int) ((packed >> 22) & 0x0F); }
-	public static int getDay(long packed)    { return (int) ((packed >> 17) & 0x1F); }
-	public static int getHour(long packed)   { return (int) ((packed >> 12) & 0x1F); }
-	public static int getMinute(long packed) { return (int) ((packed >> 6) & 0x3F); }
-	public static int getSecond(long packed) { return (int) (packed & 0x3F); }
+	public static int getYear(long packed) {
+		return (int) ((packed >> 26) & 0x3FFF);
+	}
+
+	public static int getMonth(long packed) {
+		return (int) ((packed >> 22) & 0x0F);
+	}
+
+	public static int getDay(long packed) {
+		return (int) ((packed >> 17) & 0x1F);
+	}
+
+	public static int getHour(long packed) {
+		return (int) ((packed >> 12) & 0x1F);
+	}
+
+	public static int getMinute(long packed) {
+		return (int) ((packed >> 6) & 0x3F);
+	}
+
+	public static int getSecond(long packed) {
+		return (int) (packed & 0x3F);
+	}
 
 
-	public static String getFormatDay(String format){
+	public static String getFormatDay(String format) {
 		long t = getPackedTime(System.currentTimeMillis());
-		return format.replace("Y",String.valueOf(getYear(t))).replace("M",String.valueOf(getMonth(t))).replace("D",String.valueOf(getDay(t)));
+		return format.replace("Y", String.valueOf(getYear(t))).replace("M", String.valueOf(getMonth(t))).replace("D", String.valueOf(getDay(t)));
 	}
 }

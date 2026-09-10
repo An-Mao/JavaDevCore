@@ -5,24 +5,24 @@ import com.google.gson.reflect.TypeToken;
 import dev.anye.core.exception._IOException;
 import dev.anye.core.system._File;
 
-import java.io.*;
-import java.lang.reflect.Type;
+import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.function.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
-public abstract class _JsonConfigS<T> extends _JsonSupport {
+public abstract class _JsonConfigS<T> extends _JsonCore<T> {
 	private static final ExecutorService SAVE_EXECUTOR =
-		Executors.newSingleThreadExecutor(r -> {
-			Thread thread = new Thread(r, "JsonConfig-Save");
-			thread.setDaemon(true);
-			return thread;
-		});
+			Executors.newSingleThreadExecutor(r -> {
+				Thread thread = new Thread(r, "JsonConfig-Save");
+				thread.setDaemon(true);
+				return thread;
+			});
 
 	protected final boolean checkData;
-	protected final String filePath;
 	private final T defaultRawData;
-	protected final Type type;
 
 	protected T data;
 
@@ -32,12 +32,10 @@ public abstract class _JsonConfigS<T> extends _JsonSupport {
 	private boolean dirty;
 	private long dataVersion;
 	private boolean savePending;
-	//private boolean saving;
 
 
 	protected _JsonConfigS(String filePath, T defaultRawData, TypeToken<T> typeToken, boolean checkData) {
-		this.filePath = filePath;
-		this.type = typeToken.getType();
+		super(filePath, typeToken.getType());
 		this.defaultRawData = GSON.fromJson(GSON.toJson(defaultRawData, type), type);
 		this.checkData = checkData;
 		this.data = copyData(defaultRawData);
@@ -49,35 +47,10 @@ public abstract class _JsonConfigS<T> extends _JsonSupport {
 	}
 
 	/**
-	 * @param filePath    filePath
-	 * @param defaultData defaultData
-	 * @param typeToken   typeToken
-	 * @deprecated Using this method is no longer recommended, as it may entail numerous issues;
-	 */
-	@Deprecated(since = "2.0.5")
-	@SuppressWarnings("unchecked")
-	protected _JsonConfigS(String filePath, String defaultData, TypeToken<T> typeToken, boolean checkData) {
-
-		this(filePath, (T) GSON.fromJson(defaultData, typeToken.getType()), typeToken, checkData);
-	}
-
-	/**
-	 * @param filePath    filePath
-	 * @param defaultData defaultData
-	 * @param typeToken   typeToken
-	 * @deprecated Using this method is no longer recommended, as it may entail numerous issues;
-	 */
-	@Deprecated(since = "2.0.5")
-	protected _JsonConfigS(String filePath, String defaultData, TypeToken<T> typeToken) {
-		this(filePath, defaultData, typeToken, true);
-	}
-
-
-	/**
 	 * Initial loading
 	 * <li> When {@link _JsonConfigS#checkData} is enabled, parts that do not conform to the default data format will be replaced.
 	 * </li>
-	 *
+	 * <p>
 	 * 初始化加载，子类通常不应该调用此方法，如果想重新加载，可以使用{@link _JsonConfigS#reload()}
 	 * 当{@link _JsonConfigS#checkData}为true时，使用默认数据（不为null时）替换不合规的数据
 	 */
@@ -89,7 +62,7 @@ public abstract class _JsonConfigS<T> extends _JsonSupport {
 				reset();
 			} else {
 				if (defaultRawData != null && checkData) {
-					mergeDefaultData(
+					_JsonSupport.mergeDefaultData(
 							GSON.toJsonTree(defaultRawData, type),
 							filePath
 					);
@@ -143,85 +116,6 @@ public abstract class _JsonConfigS<T> extends _JsonSupport {
 			}
 		}
 	}
-
-	/*private void load() {
-		final T newData;
-		final long version;
-
-		synchronized (dataLock) {
-			version = dataVersion;
-		}
-
-		try (Reader reader = _File.loadFileWithUtf8(filePath)) {
-			newData = GSON.fromJson(reader, type);
-		} catch (IOException e) {
-			throw new _IOException(e);
-		}
-
-		if (newData == null) {
-			return;
-		}
-
-		synchronized (dataLock) {
-			if (dataVersion != version) {
-				return;
-			}
-
-			data = newData;
-			dirty = false;
-		}
-	}*/
-
-/*
-	public void saveAsync() {
-		saveInternalAsync(false);
-	}
-
-	public void saveIfDirtyAsync() {
-		saveInternalAsync(true);
-	}
-
-
-	private void saveInternalAsync(boolean onlyIfDirty) {
-		final JsonElement json;
-		final long version;
-
-		synchronized (dataLock) {
-			if (data == null ||
-					(onlyIfDirty && !dirty) ||
-					saving) {
-				return;
-			}
-
-			json = GSON.toJsonTree(data, type);
-			version = dataVersion;
-			saving = true;
-		}
-
-		SAVE_EXECUTOR.execute(() -> {
-			try {
-				synchronized (fileLock) {
-					saveJsonToFile(json);
-				}
-
-				synchronized (dataLock) {
-					if (dataVersion == version) {
-						dirty = false;
-					}
-				}
-			} catch (Throwable e) {
-				// TODO
-				e.printStackTrace();
-			} finally {
-				synchronized (dataLock) {
-					saving = false;
-				}
-			}
-		});
-	}*/
-/*public void saveAsync() {
-	requestSave(true);
-}*/
 
 	public void saveIfDirtyAsync() {
 		synchronized (dataLock) {
@@ -279,6 +173,7 @@ public abstract class _JsonConfigS<T> extends _JsonSupport {
 			e.printStackTrace();
 		}
 	}
+
 	/**
 	 * Saves the specified data to the file and replaces the current in-memory data.
 	 * <p>
@@ -305,8 +200,6 @@ public abstract class _JsonConfigS<T> extends _JsonSupport {
 			dataVersion++;
 		}
 	}
-
-
 
 
 	/**
@@ -367,6 +260,7 @@ public abstract class _JsonConfigS<T> extends _JsonSupport {
 			return dirty;
 		}
 	}
+
 	public void saveIfDirty() {
 		saveInternal(true);
 	}
@@ -388,6 +282,7 @@ public abstract class _JsonConfigS<T> extends _JsonSupport {
 
 	/**
 	 * 修改data数据，先复制一份data，修改完成后替换现有data
+	 *
 	 * @param action action
 	 */
 	public void updateCopy(Consumer<T> action) {
@@ -409,6 +304,7 @@ public abstract class _JsonConfigS<T> extends _JsonSupport {
 	/**
 	 * Replaces the current in-memory data without saving it to the file.
 	 * 仅修改现有data而不进行保存，如果为null则不进行操作。
+	 *
 	 * @param newData new data, ignored if null
 	 */
 	public void setData(T newData) {
@@ -428,7 +324,7 @@ public abstract class _JsonConfigS<T> extends _JsonSupport {
 	 */
 	protected void saveJsonToFile(JsonElement json) {
 		try {
-			writeJsonToFile(json, filePath);
+			_JsonSupport.writeJsonToFile(json, filePath);
 		} catch (IOException e) {
 			throw new _IOException(e);
 		}
@@ -440,6 +336,7 @@ public abstract class _JsonConfigS<T> extends _JsonSupport {
 			return data != null;
 		}
 	}
+
 	/**
 	 * Reads the current data while holding the data lock.
 	 * The action should execute quickly and should not perform blocking operations.

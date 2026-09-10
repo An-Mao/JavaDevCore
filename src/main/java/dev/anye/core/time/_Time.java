@@ -12,7 +12,9 @@ public final class _Time {
 
 	private static final TimeZone SYSTEM_TIMEZONE = TimeZone.getDefault();
 
-	private _Time(){}
+	private _Time() {
+	}
+
 	public static long getSysSec() {
 		return System.currentTimeMillis() / 1000L;
 	}

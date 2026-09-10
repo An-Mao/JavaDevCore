@@ -22,35 +22,41 @@ public final class FastDateTime {
 	public int day;
 	public int millisecond;
 
-	public FastDateTime(){
+	public FastDateTime() {
 		this(System.currentTimeMillis());
 	}
-	public FastDateTime(long epochMillis){
-		this(epochMillis,DEFAULT_OFFSET_MS);
+
+	public FastDateTime(long epochMillis) {
+		this(epochMillis, DEFAULT_OFFSET_MS);
 	}
+
 	public FastDateTime(long epochMillis, long offsetMillis) {
 		this.offsetMillis = offsetMillis;
 		setEpochMillis(epochMillis);
 	}
+
 	public FastDateTime(TimeZone timeZone) {
-		this(System.currentTimeMillis(),timeZone);
+		this(System.currentTimeMillis(), timeZone);
 	}
+
 	public FastDateTime(long epochMillis, TimeZone timeZone) {
 		this.offsetMillis = timeZone.getOffset(epochMillis);
 		setEpochMillis(epochMillis);
 	}
 
-	public FastDateTime update(){
+	public FastDateTime update() {
 		return setEpochMillis(System.currentTimeMillis());
 	}
-	public FastDateTime setEpochMillis(long epochMillis){
+
+	public FastDateTime setEpochMillis(long epochMillis) {
+		if (this.epochMillis == epochMillis) return this;
 		this.epochMillis = epochMillis;
 		refresh();
 		return this;
 	}
 
 
-	public void refresh(){
+	public void refresh() {
 		long localMillis = epochMillis + offsetMillis;
 
 		long epochDay = Math.floorDiv(localMillis, DAY_MILLIS);
@@ -156,7 +162,7 @@ public final class FastDateTime {
 
 		return out.toString();
 		*/
-		return year + s + month + s + day;
+		return hour + s + minute + s + second;
 	}
 
 	public String toDateTimeString(String s) {
