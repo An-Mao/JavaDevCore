@@ -1,17 +1,10 @@
 package dev.anye.core;
 
 
-import dev.anye.core.system._Log;
-
 public class Core {
 	public static final String VERSION = "2.0.6";
 	//private static final Logger LOGGER = Logger.getLogger(Core.class.getName());
-	private static final _Log log = new _Log();
 	public static void main(String[] args) {
-		log.setDebug(true);
-		log.info("Core Version : {}=>{} A",VERSION);
-		log.debug("Core Version : {}",VERSION);
-
 		//run();
 	}
 

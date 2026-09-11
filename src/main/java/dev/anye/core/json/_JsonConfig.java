@@ -16,11 +16,15 @@ import java.util.function.Function;
 public class _JsonConfig<T> extends _JsonCore<T> {
 	protected final boolean checkData;
 	private final T defaultRawData;
-	//Expose visibility to avoid the need for subclasses to customize.
+
+	// Expose visibility to avoid the need for subclasses to customize.
 	protected final AtomicReference<T> data;
 
+	// 新增：用于保证磁盘文件读写并发安全的锁对象
+	private final Object fileLock = new Object();
+
 	public _JsonConfig(String filePath, T defaultRawData, TypeToken<T> typeToken, boolean checkData) {
-		super(filePath,typeToken);
+		super(filePath, typeToken);
 		this.defaultRawData = GSON.fromJson(GSON.toJson(defaultRawData), type);
 		this.checkData = checkData;
 		this.data = new AtomicReference<>();
@@ -35,12 +39,12 @@ public class _JsonConfig<T> extends _JsonCore<T> {
 	 * @param filePath    filePath
 	 * @param defaultData defaultData
 	 * @param typeToken   typeToken
-	 * @deprecated Using this method is no longer recommended, as it may entail numerous issues;
+	 * @deprecated Using this method is no longer recommended, as it may entail
+	 *             numerous issues;
 	 */
 	@Deprecated(since = "2.0.5")
 	@SuppressWarnings("unchecked")
 	public _JsonConfig(String filePath, String defaultData, TypeToken<T> typeToken, boolean checkData) {
-
 		this(filePath, (T) GSON.fromJson(defaultData, typeToken.getType()), typeToken, checkData);
 	}
 
@@ -48,116 +52,140 @@ public class _JsonConfig<T> extends _JsonCore<T> {
 	 * @param filePath    filePath
 	 * @param defaultData defaultData
 	 * @param typeToken   typeToken
-	 * @deprecated Using this method is no longer recommended, as it may entail numerous issues;
+	 * @deprecated Using this method is no longer recommended, as it may entail
+	 *             numerous issues;
 	 */
 	@Deprecated(since = "2.0.5")
 	public _JsonConfig(String filePath, String defaultData, TypeToken<T> typeToken) {
 		this(filePath, defaultData, typeToken, true);
 	}
 
-
 	/**
 	 * Initial loading
-	 * <li>When {@link _JsonConfig#checkData} is enabled, parts that do not conform to the default data format will be replaced.
+	 * <li>When {@link _JsonConfig#checkData} is enabled, parts that do not conform
+	 * to the default data format will be replaced.
+	 * 声明为 final 防止子类重写导致构造期逸出
 	 */
-	public void init() {
-		File file = new File(filePath);
-		if (!file.exists()) {
-			reset();
-		} else {
-			if (checkData) _JsonSupport.mergeDefaultData(GSON.toJsonTree(defaultRawData, type), filePath);
+	public final void init() {
+		synchronized (fileLock) {
+			File file = new File(filePath);
+			if (!file.exists()) {
+				// reset 内部已经同步了内存和磁盘，这里不需要再 load 造成二次 I/O
+				reset();
+			} else {
+				if (checkData) {
+					_JsonSupport.mergeDefaultData(GSON.toJsonTree(defaultRawData, type), filePath);
+				}
+				load();
+			}
 		}
-		load();
 	}
 
-	public void reload() {
+	// 声明为 final
+	public final void reload() {
 		load();
 	}
 
 	/**
 	 * Overwrite the original content with default data.
-	 * Directory existence is not checked; please ensure the provided path already exists.
+	 * Directory existence is not checked; please ensure the provided path already
+	 * exists.
+	 * 声明为 final
 	 */
-	public void reset() {
-		try (OutputStreamWriter writer = _File.startWriterWithUtf8(filePath)) {
-			writer.write(GSON.toJson(defaultRawData, this.type));
-		} catch (IOException e) {
-			throw new _IOException(e);
+	public final void reset() {
+		synchronized (fileLock) {
+			try (OutputStreamWriter writer = _File.startWriterWithUtf8(filePath)) {
+				writer.write(GSON.toJson(defaultRawData, this.type));
+				// 修复 Bug：reset 之后，同步更新内存状态，避免数据不一致
+				this.data.set(GSON.fromJson(GSON.toJson(defaultRawData), this.type));
+			} catch (IOException e) {
+				throw new _IOException(e);
+			}
 		}
 	}
 
 	/**
-	 * Loads file data and throws an exception if the data is null; please verify that the structure matches the expected type.
-	 * Before loading completes, the data remains the old data (or {@link Optional#empty} if it is the initial load).
+	 * Loads file data and throws an exception if the data is null; please verify
+	 * that the structure matches the expected type.
+	 * Before loading completes, the data remains the old data (or
+	 * {@link Optional#empty} if it is the initial load).
 	 */
 	private void load() {
-		try (Reader reader = _File.loadFileWithUtf8(filePath)) {
-			data.set(GSON.fromJson(reader, this.type));
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+		synchronized (fileLock) {
+			try (Reader reader = _File.loadFileWithUtf8(filePath)) {
+				data.set(GSON.fromJson(reader, this.type));
+			} catch (IOException e) {
+				// 统一抛出 _IOException
+				throw new _IOException(e);
+			} catch (Exception e) {
+				throw new RuntimeException("Failed to parse JSON config: " + filePath, e);
+			}
 		}
 	}
 
 	/**
 	 * Save new data to file and update memory.
-	 * <ul>
-	 *     Frequent use of this method is not recommended, as it can lead to unnecessary runtime errors.
-	 * </ul>
+	 * 声明为 final
 	 *
 	 * @param data new data
 	 */
-	public void save(T data) {
-		if (data == null) return;
+	public final void save(T data) {
+		if (data == null)
+			return;
 		setSaveFile(data);
 		this.data.set(data);
 	}
 
 	/**
 	 * Save existing data to a file and load it.
-	 * <ul>
-	 *     Frequent use of this method is not recommended, as it can lead to unnecessary runtime errors.
-	 * </ul>
+	 * 声明为 final
 	 */
-	public void save() {
+	public final void save() {
 		save(this.data.get());
 	}
-
 
 	/**
 	 * Reads the current data while holding the data lock.
 	 * The action should execute quickly and should not perform blocking operations.
+	 * 声明为 final
 	 */
-	public void read(Consumer<? super T> action) {
-		if (data.get() != null) {
-			action.accept(data.get());
+	public final void read(Consumer<? super T> action) {
+		T currentData = data.get();
+		if (currentData != null) {
+			action.accept(currentData);
 		}
-
 	}
 
-	public <R> R read(Function<? super T, ? extends R> function) {
-		return data == null ? null : function.apply(data.get());
+	// 修复 Bug：将原 data == null 改为 currentData == null 的正确判断
+	public final <R> R read(Function<? super T, ? extends R> function) {
+		T currentData = data.get();
+		return currentData == null ? null : function.apply(currentData);
 	}
 
 	/**
 	 * Modify the existing data only, without saving it.
 	 * Must not be null.
+	 * 声明为 final
 	 *
 	 * @param data new data
 	 */
-	public void setData(T data) {
-		if (data == null) return;
+	public final void setData(T data) {
+		if (data == null)
+			return;
 		this.data.set(data);
 	}
 
-
 	/**
 	 * Save without altering the existing data.
+	 * 声明为 final
 	 */
-	public void setSaveFile(T data) {
-		try (OutputStreamWriter writer = _File.startWriterWithUtf8(filePath)) {
-			GSON.toJson(data, this.type, writer);
-		} catch (IOException e) {
-			throw new _IOException(e);
+	public final void setSaveFile(T data) {
+		synchronized (fileLock) {
+			try (OutputStreamWriter writer = _File.startWriterWithUtf8(filePath)) {
+				GSON.toJson(data, this.type, writer);
+			} catch (IOException e) {
+				throw new _IOException(e);
+			}
 		}
 	}
 

@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 import dev.anye.core.exception._IOException;
 import dev.anye.core.system._File;
+import dev.anye.core.system._Log;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 public abstract class _JsonConfigS<T> extends _JsonCore<T> {
+	private static final _Log LOG = new _Log(_JsonConfigS.class);
 	private static final ExecutorService SAVE_EXECUTOR =
 			Executors.newSingleThreadExecutor(r -> {
 				Thread thread = new Thread(r, "JsonConfig-Save");
@@ -169,8 +171,8 @@ public abstract class _JsonConfigS<T> extends _JsonCore<T> {
 			synchronized (dataLock) {
 				savePending = false;
 			}
-
-			e.printStackTrace();
+			LOG.error(e.getMessage());
+			//e.printStackTrace();
 		}
 	}
 
