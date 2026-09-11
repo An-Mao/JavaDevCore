@@ -344,16 +344,26 @@ public abstract class _JsonConfigS<T> extends _JsonCore<T> {
 	 * The action should execute quickly and should not perform blocking operations.
 	 */
 	public void read(Consumer<? super T> action) {
+		read(action,null);
+	}
+
+	public void read(Consumer<? super T> action,T defaultValue) {
 		synchronized (dataLock) {
 			if (data != null) {
 				action.accept(data);
+			}else if (defaultValue != null){
+				action.accept(defaultValue);
 			}
 		}
 	}
 
-	public <R> R read(Function<? super T, ? extends R> function) {
+	public <R> R read(Function<? super T, ? extends R> function,R defaultValue) {
 		synchronized (dataLock) {
-			return data == null ? null : function.apply(data);
+			return data == null ? defaultValue : function.apply(data);
 		}
+	}
+
+	public <R> R read(Function<? super T, ? extends R> function) {
+		return read(function,null);
 	}
 }

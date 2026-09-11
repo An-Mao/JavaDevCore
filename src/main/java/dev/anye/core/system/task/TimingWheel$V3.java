@@ -81,7 +81,7 @@ import java.util.concurrent.locks.LockSupport;
  *                 executor
  *         );
  */
-public final class TimingWheel implements AutoCloseable {
+public final class TimingWheel$V3 implements AutoCloseable {
 
 	/*
 	 * ============================================================
@@ -239,7 +239,7 @@ public final class TimingWheel implements AutoCloseable {
 	 * wheel = 512
 	 * </pre>
 	 */
-	public TimingWheel() {
+	public TimingWheel$V3() {
 
 		this(
 				DEFAULT_TICK,
@@ -253,7 +253,7 @@ public final class TimingWheel implements AutoCloseable {
 	/**
 	 * 指定 Executor。
 	 */
-	public TimingWheel(
+	public TimingWheel$V3(
 			long tick,
 			TimeUnit unit,
 			int wheelSize,
@@ -272,7 +272,7 @@ public final class TimingWheel implements AutoCloseable {
 	/**
 	 * 完整构造器。
 	 */
-	public TimingWheel(
+	public TimingWheel$V3(
 			long tick,
 			TimeUnit unit,
 			int wheelSize,
@@ -1922,7 +1922,7 @@ public final class TimingWheel implements AutoCloseable {
 
 	public static final class TimerTask {
 
-		private final $_TimingWheel owner;
+		private final TimingWheel$V3 owner;
 
 		private final long id;
 
@@ -1984,7 +1984,7 @@ public final class TimingWheel implements AutoCloseable {
 		private TimerTask next;
 
 		private TimerTask(
-				$_TimingWheel owner,
+				TimingWheel$V3 owner,
 				long id,
 				Runnable runnable
 		) {

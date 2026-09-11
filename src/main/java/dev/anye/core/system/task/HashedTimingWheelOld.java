@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *     <li>时间推进：O(n)，n 为当前槽中的任务数量</li>
  * </ul>
  */
-public final class HashedTimingWheel implements AutoCloseable {
+public final class HashedTimingWheelOld implements AutoCloseable {
 
 	/**
 	 * 默认 tick 时间。
@@ -96,7 +96,7 @@ public final class HashedTimingWheel implements AutoCloseable {
 	/**
 	 * 创建默认时间轮。
 	 */
-	public HashedTimingWheel() {
+	public HashedTimingWheelOld() {
 		this(
 				DEFAULT_TICK_MILLIS,
 				TimeUnit.MILLISECONDS,
@@ -112,7 +112,7 @@ public final class HashedTimingWheel implements AutoCloseable {
 	 * @param unit         时间单位
 	 * @param wheelSize    槽位数量，必须为 2 的幂
 	 */
-	public HashedTimingWheel(
+	public HashedTimingWheelOld(
 			long tickDuration,
 			TimeUnit unit,
 			int wheelSize
@@ -133,7 +133,7 @@ public final class HashedTimingWheel implements AutoCloseable {
 	 * @param wheelSize    槽位数量，必须为 2 的幂
 	 * @param threadName   Worker 线程名称
 	 */
-	public HashedTimingWheel(
+	public HashedTimingWheelOld(
 			long tickDuration,
 			TimeUnit unit,
 			int wheelSize,
@@ -589,7 +589,7 @@ public final class HashedTimingWheel implements AutoCloseable {
 		}
 
 		synchronized void expire(
-				HashedTimingWheel wheel,
+				HashedTimingWheelOld wheel,
 				long now
 		) {
 
@@ -774,7 +774,7 @@ public final class HashedTimingWheel implements AutoCloseable {
 	 */
 	public static final class TimerTask {
 
-		private final HashedTimingWheel wheel;
+		private final HashedTimingWheelOld wheel;
 
 		private final Runnable runnable;
 
@@ -822,7 +822,7 @@ public final class HashedTimingWheel implements AutoCloseable {
 		private TimerTask next;
 
 		private TimerTask(
-				HashedTimingWheel wheel,
+				HashedTimingWheelOld wheel,
 				Runnable runnable,
 				long periodNanos,
 				boolean fixedRate

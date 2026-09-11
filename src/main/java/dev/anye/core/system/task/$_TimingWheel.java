@@ -35,7 +35,7 @@ import java.util.concurrent.locks.LockSupport;
  *
  * @author Anye
  */
-public final class TimingWheel implements AutoCloseable {
+public final class $_TimingWheel implements AutoCloseable {
 
 	/**
 	 * 每一格代表的时间。
@@ -100,7 +100,7 @@ public final class TimingWheel implements AutoCloseable {
 	 * @param tickDuration 每个 Tick 的时间
 	 * @param unit         时间单位
 	 */
-	public TimingWheel(
+	public $_TimingWheel(
 			int wheelSize,
 			long tickDuration,
 			TimeUnit unit
@@ -169,7 +169,7 @@ public final class TimingWheel implements AutoCloseable {
 	 * tick      = 10ms
 	 * </pre>
 	 */
-	public TimingWheel() {
+	public $_TimingWheel() {
 		this(
 				512,
 				10,
@@ -790,7 +790,7 @@ public final class TimingWheel implements AutoCloseable {
 		/**
 		 * 所属时间轮。
 		 */
-		private final TimingWheel wheel;
+		private final $_TimingWheel wheel;
 
 		/**
 		 * 实际任务。
@@ -852,7 +852,7 @@ public final class TimingWheel implements AutoCloseable {
 		private TimerTask next;
 
 		private TimerTask(
-				TimingWheel wheel,
+				$_TimingWheel wheel,
 				Runnable task,
 				boolean repeat,
 				long periodNanos,
@@ -943,7 +943,7 @@ public final class TimingWheel implements AutoCloseable {
 		/**
 		 * 获取任务所属时间轮。
 		 */
-		public TimingWheel getWheel() {
+		public $_TimingWheel getWheel() {
 			return wheel;
 		}
 	}

@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class _JsonConfig<T> extends _JsonCore<T> {
+public abstract class _JsonConfig<T> extends _JsonCore<T> {
 	protected final boolean checkData;
 	private final T defaultRawData;
 
@@ -23,7 +23,7 @@ public class _JsonConfig<T> extends _JsonCore<T> {
 	// 新增：用于保证磁盘文件读写并发安全的锁对象
 	private final Object fileLock = new Object();
 
-	public _JsonConfig(String filePath, T defaultRawData, TypeToken<T> typeToken, boolean checkData) {
+	protected _JsonConfig(String filePath, T defaultRawData, TypeToken<T> typeToken, boolean checkData) {
 		super(filePath, typeToken);
 		this.defaultRawData = GSON.fromJson(GSON.toJson(defaultRawData), type);
 		this.checkData = checkData;
@@ -31,7 +31,7 @@ public class _JsonConfig<T> extends _JsonCore<T> {
 		init();
 	}
 
-	public _JsonConfig(String filePath, T defaultData, TypeToken<T> typeToken) {
+	protected _JsonConfig(String filePath, T defaultData, TypeToken<T> typeToken) {
 		this(filePath, defaultData, typeToken, true);
 	}
 
@@ -44,7 +44,7 @@ public class _JsonConfig<T> extends _JsonCore<T> {
 	 */
 	@Deprecated(since = "2.0.5")
 	@SuppressWarnings("unchecked")
-	public _JsonConfig(String filePath, String defaultData, TypeToken<T> typeToken, boolean checkData) {
+	protected _JsonConfig(String filePath, String defaultData, TypeToken<T> typeToken, boolean checkData) {
 		this(filePath, (T) GSON.fromJson(defaultData, typeToken.getType()), typeToken, checkData);
 	}
 
@@ -56,7 +56,7 @@ public class _JsonConfig<T> extends _JsonCore<T> {
 	 *             numerous issues;
 	 */
 	@Deprecated(since = "2.0.5")
-	public _JsonConfig(String filePath, String defaultData, TypeToken<T> typeToken) {
+	protected _JsonConfig(String filePath, String defaultData, TypeToken<T> typeToken) {
 		this(filePath, defaultData, typeToken, true);
 	}
 
@@ -150,16 +150,25 @@ public class _JsonConfig<T> extends _JsonCore<T> {
 	 * 声明为 final
 	 */
 	public final void read(Consumer<? super T> action) {
+		read(action,null);
+	}
+
+	public final void read(Consumer<? super T> action,T defaultValue) {
 		T currentData = data.get();
 		if (currentData != null) {
 			action.accept(currentData);
+		}else if (defaultValue != null){
+			action.accept(defaultValue);
 		}
 	}
 
 	// 修复 Bug：将原 data == null 改为 currentData == null 的正确判断
 	public final <R> R read(Function<? super T, ? extends R> function) {
+		return read(function,null);
+	}
+	public final <R> R read(Function<? super T, ? extends R> function,R defaultValue) {
 		T currentData = data.get();
-		return currentData == null ? null : function.apply(currentData);
+		return currentData == null ? defaultValue : function.apply(currentData);
 	}
 
 	/**

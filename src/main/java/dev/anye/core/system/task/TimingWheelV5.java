@@ -72,7 +72,7 @@ import java.util.function.BiConsumer;
  * TimingWheel 只负责「什么时候执行」，
  * Executor 负责「在哪里执行」。
  */
-public final class TimingWheel implements AutoCloseable {
+public final class TimingWheelV5 implements AutoCloseable {
 
 	/* ============================================================
 	 * State
@@ -211,11 +211,11 @@ public final class TimingWheel implements AutoCloseable {
 	 * Constructor
 	 * ============================================================ */
 
-	public TimingWheel() {
+	public TimingWheelV5() {
 		this(builder());
 	}
 
-	public TimingWheel(
+	public TimingWheelV5(
 			long tick,
 			TimeUnit unit,
 			int wheelSize,
@@ -229,7 +229,7 @@ public final class TimingWheel implements AutoCloseable {
 		);
 	}
 
-	private TimingWheel(Builder builder) {
+	private TimingWheelV5(Builder builder) {
 
 		Objects.requireNonNull(
 				builder.unit,
@@ -442,8 +442,8 @@ public final class TimingWheel implements AutoCloseable {
 			return this;
 		}
 
-		public TimingWheel build() {
-			return new TimingWheel(this);
+		public TimingWheelV5 build() {
+			return new TimingWheelV5(this);
 		}
 	}
 
@@ -2188,7 +2188,7 @@ public final class TimingWheel implements AutoCloseable {
 		}
 
 		public boolean cancel() {
-			return TimingWheel.this.cancel(this);
+			return TimingWheelV5.this.cancel(this);
 		}
 
 		public boolean isCancelled() {

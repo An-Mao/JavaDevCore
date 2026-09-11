@@ -35,7 +35,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  *
  * 真正的 Runnable 默认交给 Executor 执行。
  */
-public final class TimingWheel implements AutoCloseable {
+public final class $_HashedTimingWheel implements AutoCloseable {
 
 	/*
 	 * ============================================================
@@ -134,7 +134,7 @@ public final class TimingWheel implements AutoCloseable {
 	/**
 	 * 创建默认时间轮。
 	 */
-	public TimingWheel() {
+	public $_HashedTimingWheel() {
 		this(
 				DEFAULT_TICK_NANOS,
 				TimeUnit.NANOSECONDS,
@@ -169,7 +169,7 @@ public final class TimingWheel implements AutoCloseable {
 	 * @param wheelSize    槽位数量
 	 * @param executor     任务执行器
 	 */
-	public TimingWheel(
+	public $_HashedTimingWheel(
 			long tickDuration,
 			TimeUnit unit,
 			int wheelSize,
@@ -187,7 +187,7 @@ public final class TimingWheel implements AutoCloseable {
 	/**
 	 * 完整构造器。
 	 */
-	public TimingWheel(
+	public $_HashedTimingWheel(
 			long tickDuration,
 			TimeUnit unit,
 			int wheelSize,
@@ -1191,7 +1191,7 @@ public final class TimingWheel implements AutoCloseable {
 
 	public static final class TimerTask {
 
-		private final TimingWheel owner;
+		private final $_HashedTimingWheel owner;
 
 		private final long id;
 
@@ -1256,7 +1256,7 @@ public final class TimingWheel implements AutoCloseable {
 		private TimerTask next;
 
 		private TimerTask(
-				TimingWheel owner,
+				$_HashedTimingWheel owner,
 				long id,
 				Runnable runnable
 		) {
