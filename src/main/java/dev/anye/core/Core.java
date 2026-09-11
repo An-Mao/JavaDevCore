@@ -14,57 +14,5 @@ public class Core {
 	}
 
 	public static void run() {
-		HashedTimingWheelOld wheel = new HashedTimingWheelOld();
-
-		wheel.schedule(
-				() -> System.out.println("3 秒后执行"),
-				3,
-				TimeUnit.SECONDS
-		);
-		wheel.scheduleWithFixedDelay(
-				() -> {
-					System.out.println("执行任务");
-				},
-				0,
-				1,
-				TimeUnit.SECONDS
-		);
-		wheel.scheduleAtFixedRate(
-				() -> {
-					System.out.println("Tick");
-				},
-				0,
-				100,
-				TimeUnit.MILLISECONDS
-		);
-		HashedTimingWheelOld.TimerTask task =
-				wheel.schedule(
-						() -> System.out.println("不会执行"),
-						10,
-						TimeUnit.SECONDS
-				);
-
-		task.cancel();
-
-
-		$_TimingWheel wheel = new $_TimingWheel(
-				512,
-				10,
-				TimeUnit.MILLISECONDS
-		);
-
-		wheel.schedule(
-				() -> System.out.println("3 秒后执行"),
-				3,
-				TimeUnit.SECONDS
-		);
-		wheel.scheduleWithFixedDelay(
-				() -> {
-					System.out.println("执行任务");
-				},
-				0,
-				1,
-				TimeUnit.SECONDS
-		);
 	}
 }
