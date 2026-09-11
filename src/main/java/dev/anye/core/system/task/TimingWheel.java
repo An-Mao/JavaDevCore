@@ -1,12 +1,9 @@
 package dev.anye.core.system.task;
 
+import dev.anye.core.system._Log;
+
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -69,7 +66,7 @@ import java.util.function.BiConsumer;
  *
  */
 public final class TimingWheel implements AutoCloseable {
-
+	private static final _Log LOG = new _Log(TimingWheel.class);
 	/* ============================================================
 	 * State
 	 * ============================================================ */
@@ -183,7 +180,7 @@ public final class TimingWheel implements AutoCloseable {
 		private Executor executor = ForkJoinPool.commonPool();
 		private String threadName = "TimingWheel-Worker";
 		private boolean daemon = true;
-		private BiConsumer<TimerTask, Throwable> exceptionHandler = (task, throwable) -> throwable.printStackTrace();
+		private BiConsumer<TimerTask, Throwable> exceptionHandler = (task, throwable) -> LOG.error(throwable.getMessage());
 
 		public Builder tick(long tick, TimeUnit unit) {
 			this.tick = tick;
@@ -365,8 +362,8 @@ public final class TimingWheel implements AutoCloseable {
 				parked.set(false);
 			}
 		} catch (Throwable t) {
-			System.err.println("[TimingWheel] Fatal error: Worker thread died unexpectedly!");
-			t.printStackTrace();
+			LOG.error("[TimingWheel] Fatal error: Worker thread died unexpectedly!");
+			LOG.error(t.getMessage());
 		} finally {
 			cleanup();
 		}
