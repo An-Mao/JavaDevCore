@@ -13,7 +13,11 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public abstract class _JsonConfigX<T> extends _JsonCore<T> {
+/**
+ * 原子的另一个版本。增加了更多的安全措施。
+ * @param <T>
+ */
+public abstract class _JsonConfigA<T> extends _JsonCore<T> {
 	protected final boolean checkData;
 	private final String defaultRawDataBase;
 	private final T defaultRawData;
@@ -23,7 +27,7 @@ public abstract class _JsonConfigX<T> extends _JsonCore<T> {
 	private final Object dataLock = new Object();
 	private final Object fileLock = new Object();
 
-	protected _JsonConfigX(String filePath, T defaultRawData, TypeToken<T> typeToken, boolean checkData) {
+	protected _JsonConfigA(String filePath, T defaultRawData, TypeToken<T> typeToken, boolean checkData) {
 		super(filePath,typeToken.getType());
 
 		defaultRawDataBase = GSON.toJson(defaultRawData);
@@ -32,14 +36,14 @@ public abstract class _JsonConfigX<T> extends _JsonCore<T> {
 		init();
 	}
 
-	protected _JsonConfigX(String filePath, T defaultData, TypeToken<T> typeToken) {
+	protected _JsonConfigA(String filePath, T defaultData, TypeToken<T> typeToken) {
 		this(filePath, defaultData, typeToken, true);
 	}
 
 
 	/**
 	 * Initial loading
-	 * <li>When {@link _JsonConfigX#checkData} is enabled, parts that do not conform to the default data format will be replaced.
+	 * <li>When {@link _JsonConfigA#checkData} is enabled, parts that do not conform to the default data format will be replaced.
 	 */
 	public void init() {
 		synchronized (fileLock) {

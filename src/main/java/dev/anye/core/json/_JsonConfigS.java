@@ -14,6 +14,11 @@ import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * 加锁版本，虽然确保了线程安全，但可能会造成堵塞。
+ * 如果只读不写，可以考虑使用{@link _JsonConfigR}这种只读版本
+ * @param <T>
+ */
 public abstract class _JsonConfigS<T> extends _JsonCore<T> {
 	private static final _Log LOG = new _Log(_JsonConfigS.class);
 	private static final ExecutorService SAVE_EXECUTOR =
@@ -172,7 +177,6 @@ public abstract class _JsonConfigS<T> extends _JsonCore<T> {
 				savePending = false;
 			}
 			LOG.error(e.getMessage());
-			//e.printStackTrace();
 		}
 	}
 

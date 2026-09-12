@@ -13,6 +13,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * 原子版本，一定程度上确保线程安全。
+ * @param <T>
+ */
 public abstract class _JsonConfig<T> extends _JsonCore<T> {
 	protected final boolean checkData;
 	private final T defaultRawData;
