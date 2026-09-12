@@ -97,6 +97,7 @@ public abstract class _JsonConfig<T> extends _JsonCore<T> {
 	 * 声明为 final
 	 */
 	public final void reset() {
+		if (defaultRawData == null) return;
 		synchronized (fileLock) {
 			try (OutputStreamWriter writer = _File.startWriterWithUtf8(filePath)) {
 				writer.write(GSON.toJson(defaultRawData, this.type));

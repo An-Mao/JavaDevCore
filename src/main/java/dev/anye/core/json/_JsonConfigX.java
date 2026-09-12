@@ -56,6 +56,7 @@ public abstract class _JsonConfigX<T> extends _JsonCore<T> {
 	}
 
 	protected final void reset() {
+		if (defaultRawData == null) return;
 		try (OutputStreamWriter writer = _File.startWriterWithUtf8(filePath)) {
 			writer.write(GSON.toJson(defaultRawData, this.type));
 			T newData = GSON.fromJson(GSON.toJson(defaultRawData), this.type);
