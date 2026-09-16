@@ -17,26 +17,46 @@ import java.util.function.Function;
 
 public final class _Pack {
 	private _Pack(){}
+	/**
+	 * 将包内文件写出到系统，跳过已存在的文件
+	 * @param packPath 包内路径
+	 * @param putPath 输出路径
+	 * @param suffix 文件后缀
+	 * @param names 要输出的文件名
+	 */
 	public static void writeFiles(String packPath, String putPath, String suffix, String... names) {
-		writeFiles(packPath, putPath, suffix, false, names);
+		writeFiles(packPath, putPath, suffix, true, names);
 	}
 
-	public static void writeJsonFiles(String packPath, String putPath, boolean replace, String... names) {
-		writeFiles(packPath, putPath, _SuffixCDT.JSON_SUFFIX, replace, names);
+	public static void writeJsonFiles(String packPath, String putPath, boolean skip, String... names) {
+		writeFiles(packPath, putPath, _SuffixCDT.JSON_SUFFIX, skip, names);
 	}
 
 	public static void writeJsonFiles(String packPath, String putPath, String... names) {
 		writeFiles(packPath, putPath, _SuffixCDT.JSON_SUFFIX, names);
 	}
-	public static void writeFiles(String packPath, String putPath, String suffix, boolean replace, String... names) {
+
+	/**
+	 * 将包内文件写出到系统
+	 * @param packPath 包内路径
+	 * @param putPath 输出路径
+	 * @param suffix 文件后缀
+	 * @param skip 文件存在时是否跳过
+	 * @param names 要输出的文件名
+	 */
+	public static void writeFiles(String packPath, String putPath, String suffix, boolean skip, String... names) {
 		ClassLoader classLoader = _Class.getClassLoader();
 		for (String name : names) {
-			if (replace && new File(_File.getFilePath(putPath, name + suffix)).exists()) continue;
-			try (InputStream inputStream = classLoader.getResourceAsStream(_File.getFilePath(packPath, name + suffix))) {
-				if (inputStream == null)
-					throw new FileNotFoundException("Resource not found: " + _File.getFilePath(packPath, name + suffix));
-				Path outputPath = Paths.get(_File.getFilePath(putPath, name + suffix));
+			String output = _File.getFilePath(putPath, name + suffix);
+			if (new File(output).exists() && skip) continue;
+
+			String input = _File.getFilePath(packPath, name + suffix);
+			try (InputStream inputStream = classLoader.getResourceAsStream(input)) {
+				if (inputStream == null) throw new FileNotFoundException("Resource not found: " + input);
+
+				Path outputPath = Paths.get(output);
 				Files.copy(inputStream, outputPath, StandardCopyOption.REPLACE_EXISTING);
+
 			} catch (IOException e) {
 				throw new _IOException(e);
 			}
