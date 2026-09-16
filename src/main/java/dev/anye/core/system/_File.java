@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class _File {
+	private _File(){}
 	/**
 	 *
 	 * @param strings a ,b ,c
@@ -124,7 +125,13 @@ public final class _File {
 	}
 
 	public static InputStreamReader loadFileWithUtf8(String file) throws FileNotFoundException {
-		return new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
+		return loadFileWithUtf8(new FileInputStream(file));
+	}
+	public static InputStreamReader loadFileWithUtf8(InputStream inputStream){
+		return new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+	}
+	public static BufferedReader readFileWithUtf8(InputStream stream) {
+		return new BufferedReader(loadFileWithUtf8(stream));
 	}
 
 	public static OutputStreamWriter startWriterWithUtf8(String file) throws FileNotFoundException {

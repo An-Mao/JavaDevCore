@@ -1,13 +1,17 @@
 package dev.anye.core.json;
 
 import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
 import dev.anye.core.cdt._SuffixCDT;
 import dev.anye.core.exception._IOException;
+import dev.anye.core.pack._Pack;
 import dev.anye.core.system._File;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Writer;
+import java.lang.reflect.Type;
 import java.nio.file.*;
 import java.util.Map;
 import java.util.UUID;
@@ -116,4 +120,24 @@ public class _JsonSupport {
 		}
 		return targetArray;
 	}
+
+	public static <T> T readByPackOr(String filePath, TypeToken<T> typeToken,T other){
+		return readByPackOr(filePath,typeToken.getType(),other);
+	}
+	public static <T> T readByPackOr(String filePath, Type type,T other){
+		if (filePath == null || filePath.isBlank()) return other;
+		T data = GSON.fromJson((InputStreamReader)_Pack.readFile(filePath, _File::loadFileWithUtf8),type);
+		if (data != null)  return data;
+		return other;
+	}
+
+	public static <T> T readByPack(String filePath, TypeToken<T> typeToken){
+		return readByPack(filePath,typeToken.getType());
+	}
+
+	public static <T> T readByPack(String filePath, Type type){
+		if (filePath == null || filePath.isBlank()) return null;
+		return GSON.fromJson((InputStreamReader)_Pack.readFile(filePath, _File::loadFileWithUtf8),type);
+	}
+
 }

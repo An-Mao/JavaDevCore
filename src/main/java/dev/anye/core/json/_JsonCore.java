@@ -27,6 +27,7 @@ public abstract class _JsonCore<T> {
 	public abstract void read(Consumer<? super T> action);
 
 	public abstract <R> R read(Function<? super T, ? extends R> function);
+
 	public <R> Optional<R> readOpt(Function<? super T, ? extends R> function){
 		return Optional.ofNullable(read(function));
 	}
