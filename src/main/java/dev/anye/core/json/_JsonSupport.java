@@ -8,7 +8,6 @@ import dev.anye.core.pack._Pack;
 import dev.anye.core.system._File;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Writer;
 import java.lang.reflect.Type;
@@ -126,7 +125,7 @@ public class _JsonSupport {
 	}
 	public static <T> T readByPackOr(String filePath, Type type,T other){
 		if (filePath == null || filePath.isBlank()) return other;
-		T data = GSON.fromJson((InputStreamReader)_Pack.readFile(filePath, _File::loadFileWithUtf8),type);
+		T data = _Pack.readFile(filePath, inputStream -> GSON.fromJson(_File.loadFileWithUtf8(inputStream),type));
 		if (data != null)  return data;
 		return other;
 	}
@@ -137,7 +136,7 @@ public class _JsonSupport {
 
 	public static <T> T readByPack(String filePath, Type type){
 		if (filePath == null || filePath.isBlank()) return null;
-		return GSON.fromJson((InputStreamReader)_Pack.readFile(filePath, _File::loadFileWithUtf8),type);
+		return _Pack.readFile(filePath, inputStream -> GSON.fromJson(_File.loadFileWithUtf8(inputStream),type));
 	}
 
 }
