@@ -76,7 +76,7 @@ public final class _Pack {
 
 	/**
 	 * 读取包内文件并进行自定义处理，此方法含有返回
-	 * @param filePath 文件类型
+	 * @param filePath 文件路径
 	 * @param function 自定义行为
 	 * @return R
 	 * @param <R> 自定义返回类型
@@ -94,7 +94,7 @@ public final class _Pack {
 
 	/**
 	 * 读取包内文件并进行自定义处理，此方法不含返回
-	 * @param filePath 文件类型
+	 * @param filePath 文件路径
 	 * @param action 自定义行为
 	 */
 	public static void readFileX(String filePath, Consumer<? super InputStream> action){

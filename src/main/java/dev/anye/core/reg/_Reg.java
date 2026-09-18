@@ -3,6 +3,7 @@ package dev.anye.core.reg;
 import dev.anye.core.exception._ClassNotFoundException;
 import dev.anye.core.exception._IOException;
 import dev.anye.core.exception._TargetException;
+import dev.anye.core.system.log._Log;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +21,7 @@ import java.util.jar.JarFile;
 
 public class _Reg<T, A extends Annotation> {
 	public static final String CLASS_SUFFIX = ".class";
+	public static final _Log LOG = new _Log(_Reg.class);
 	private final Map<String, T> dataMap = new HashMap<>();
 	private final Class<A> type;
 	private final Consumer<A> consumer;
@@ -105,7 +107,8 @@ public class _Reg<T, A extends Annotation> {
 				} else if (file.getName().endsWith(CLASS_SUFFIX)) {
 					String className = packageName + "." + file.getName().substring(0, file.getName().length() - 6);
 					if (!className.contains("$")) {
-						System.out.println("Registered: " + className);
+						LOG.debug("Registered: {}",className);
+						//System.out.println("Registered: " + className);
 						reg(className);
 					}
 				}

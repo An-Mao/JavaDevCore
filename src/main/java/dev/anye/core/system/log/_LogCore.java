@@ -1,4 +1,4 @@
-package dev.anye.core.system;
+package dev.anye.core.system.log;
 
 public interface  _LogCore {
 	void info(String msg, Object... param);

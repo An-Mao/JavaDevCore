@@ -16,6 +16,7 @@ plugins {
 java {
     sourceCompatibility = '17'
     targetCompatibility = '17'
+    withSourcesJar()
 }
 
 
@@ -123,10 +124,10 @@ tasks.register('shadowJarAll', ShadowJar) {
 publishing {
     publications {
         mavenJava(MavenPublication) {
+            from components.java
             groupId = group
             artifactId = baseName
             version = version
-            from components.java
         }
     }
     repositories {

@@ -4,7 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 import dev.anye.core.exception._IOException;
 import dev.anye.core.system._File;
-import dev.anye.core.system._Log;
+import dev.anye.core.system.log._Log;
 
 import java.io.File;
 import java.io.IOException;

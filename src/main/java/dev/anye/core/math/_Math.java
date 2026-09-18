@@ -214,15 +214,6 @@ public class _Math extends _MathCDT {
 	public static double pullBackWithPI(double v) {
 		while (v > PI) v = v - TWICE_PI;
 		while (v < -PI) v = v + TWICE_PI;
-		/*
-		if (v > PI) {
-			v = v - TWICE_PI;
-		}
-		if (v < -PI) {
-			v = v + TWICE_PI;
-		}
-
-		 */
 		return v;
 	}
 

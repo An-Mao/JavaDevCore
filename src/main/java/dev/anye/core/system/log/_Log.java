@@ -1,4 +1,4 @@
-package dev.anye.core.system;
+package dev.anye.core.system.log;
 
 import dev.anye.core.time.FastDateTime;
 

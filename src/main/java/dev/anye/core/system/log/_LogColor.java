@@ -1,4 +1,4 @@
-package dev.anye.core.system;
+package dev.anye.core.system.log;
 
 public class _LogColor {
 	public static final String RESET = "\u001B[0m";

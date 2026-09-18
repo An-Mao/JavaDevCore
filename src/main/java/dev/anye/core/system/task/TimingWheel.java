@@ -1,6 +1,6 @@
 package dev.anye.core.system.task;
 
-import dev.anye.core.system._Log;
+import dev.anye.core.system.log._Log;
 
 import java.util.Objects;
 import java.util.concurrent.*;
