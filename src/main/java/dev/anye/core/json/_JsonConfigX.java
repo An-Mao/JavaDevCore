@@ -79,20 +79,17 @@ public abstract class _JsonConfigX<T> extends _JsonCore<T> {
 
 	}
 
-	public final void read(Consumer<? super T> action) {
-		read(action, null);
-	}
-	public final void read(Consumer<? super T> action,T defaultValue) {
+	@Override
+	public final void read(Consumer<? super T> action,T spare) {
 		if (data != null) {
 			action.accept(data);
-		}else if (defaultValue != null){
-			action.accept(defaultValue);
+		}else if (spare != null){
+			action.accept(spare);
 		}
 	}
-	public final <R> R read(Function<? super T, ? extends R> function) {
-		return read(function,null);
-	}
-	public final <R> R read(Function<? super T, ? extends R> function,R defaultValue) {
+
+	@Override
+	public final <R> R fetch(Function<? super T, ? extends R> function,R defaultValue) {
 		return data == null ? defaultValue : function.apply(data);
 	}
 	public final void setData(T newData) {

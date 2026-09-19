@@ -154,24 +154,18 @@ public abstract class _JsonConfig<T> extends _JsonCore<T> {
 	 * The action should execute quickly and should not perform blocking operations.
 	 * 声明为 final
 	 */
-	public final void read(Consumer<? super T> action) {
-		read(action,null);
-	}
-
-	public final void read(Consumer<? super T> action,T defaultValue) {
+	public final void read(Consumer<? super T> action,T spare) {
 		T currentData = data.get();
 		if (currentData != null) {
 			action.accept(currentData);
-		}else if (defaultValue != null){
-			action.accept(defaultValue);
+		}else if (spare != null){
+			action.accept(spare);
 		}
 	}
 
 	// 修复 Bug：将原 data == null 改为 currentData == null 的正确判断
-	public final <R> R read(Function<? super T, ? extends R> function) {
-		return read(function,null);
-	}
-	public final <R> R read(Function<? super T, ? extends R> function,R defaultValue) {
+	@Override
+	public final <R> R fetch(Function<? super T, ? extends R> function,R defaultValue) {
 		T currentData = data.get();
 		return currentData == null ? defaultValue : function.apply(currentData);
 	}

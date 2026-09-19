@@ -347,27 +347,21 @@ public abstract class _JsonConfigS<T> extends _JsonCore<T> {
 	 * Reads the current data while holding the data lock.
 	 * The action should execute quickly and should not perform blocking operations.
 	 */
-	public void read(Consumer<? super T> action) {
-		read(action,null);
-	}
-
-	public void read(Consumer<? super T> action,T defaultValue) {
+	@Override
+	public void read(Consumer<? super T> action,T spare) {
 		synchronized (dataLock) {
 			if (data != null) {
 				action.accept(data);
-			}else if (defaultValue != null){
-				action.accept(defaultValue);
+			}else if (spare != null){
+				action.accept(spare);
 			}
 		}
 	}
 
-	public <R> R read(Function<? super T, ? extends R> function,R defaultValue) {
+	@Override
+	public <R> R fetch(Function<? super T, ? extends R> function,R defaultValue) {
 		synchronized (dataLock) {
 			return data == null ? defaultValue : function.apply(data);
 		}
-	}
-
-	public <R> R read(Function<? super T, ? extends R> function) {
-		return read(function,null);
 	}
 }

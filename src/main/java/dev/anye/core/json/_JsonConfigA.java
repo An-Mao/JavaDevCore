@@ -223,17 +223,21 @@ public abstract class _JsonConfigA<T> extends _JsonCore<T> {
 		read(action);
 	}
 
-	public void read(Consumer<? super T> action) {
+	@Override
+	public void read(Consumer<? super T> action,T spare) {
 		synchronized (dataLock) {
 			T value = data.get();
 
 			if (value != null) {
 				action.accept(value);
+			}else if (spare != null){
+				action.accept(spare);
 			}
 		}
 	}
 
-	public <R> R read(Function<? super T, ? extends R> function) {
+	@Override
+	public <R> R fetch(Function<? super T, ? extends R> function) {
 		synchronized (dataLock) {
 			T value = data.get();
 
