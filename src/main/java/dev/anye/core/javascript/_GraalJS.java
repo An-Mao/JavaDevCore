@@ -19,7 +19,7 @@ public class _GraalJS extends _JavaScript<_GraalJS, Source> {
 	}
 
 	public _GraalJS(Context context, Value bindings, boolean cache) {
-		super(cache);
+		super("Graal JS",cache);
 		this.context = context;
 		this.bindings = bindings;
 	}
@@ -29,7 +29,7 @@ public class _GraalJS extends _JavaScript<_GraalJS, Source> {
 	}
 
 	public _GraalJS(boolean cache) {
-		super(cache);
+		super("Graal JS",cache);
 		context = Context.create("js");
 		bindings = context.getBindings("js");
 	}

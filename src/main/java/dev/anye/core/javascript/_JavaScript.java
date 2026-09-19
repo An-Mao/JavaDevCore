@@ -13,12 +13,19 @@ import java.util.Map;
 public abstract class _JavaScript<T extends _JavaScript<T, S>, S> {
 	public static final String FileEncoding = StandardCharsets.UTF_8.name();
 
+	private final String name;
 	private final boolean cache;
 	private final HashMap<String, S> temp = new HashMap<>();
 
-	protected _JavaScript(boolean cache) {
+	protected _JavaScript(String name,boolean cache) {
+		this.name = name;
 		this.cache = cache;
 	}
+
+	public String name(){
+		return name;
+	}
+
 
 	public abstract T addParameter(String name, Object value);
 

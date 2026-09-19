@@ -15,7 +15,7 @@ public class _NashornJS extends _JavaScript<_NashornJS, String> {
 	private final ScriptEngine engine;
 
 	public _NashornJS(boolean cache) {
-		super(cache);
+		super("Nashorn JS",cache);
 		sef = new NashornScriptEngineFactory();
 		engine = sef.getScriptEngine();
 	}
