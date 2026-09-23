@@ -11,6 +11,19 @@ import java.util.Stack;
 public class _Math extends _MathCDT {
 
 	/**
+	 * 将值限制到（a,b）
+	 * @param v
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	public static int clamp(int v, int a, int b) {
+		if (a > b) return Math.min(a,Math.max(b,v));
+		return Math.min(b,Math.max(a,v));
+	}
+
+
+	/**
 	 * 快速取绝对值
 	 *
 	 * @param v 待取绝对值的整数
