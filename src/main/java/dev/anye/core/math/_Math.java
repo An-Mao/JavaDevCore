@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Stack;
 
-public class _Math extends _MathCDT {
+public final class _Math {
 
 	/**
 	 * 将值限制到（a,b）
@@ -225,8 +225,8 @@ public class _Math extends _MathCDT {
 	 * @return [-PI, PI]
 	 */
 	public static double pullBackWithPI(double v) {
-		while (v > PI) v = v - TWICE_PI;
-		while (v < -PI) v = v + TWICE_PI;
+		while (v > _MathCDT.PI) v = v - _MathCDT.TWICE_PI;
+		while (v < -_MathCDT.PI) v = v + _MathCDT.TWICE_PI;
 		return v;
 	}
 
@@ -324,7 +324,7 @@ public class _Math extends _MathCDT {
 	public static List<Point2D.Double> getPosWithCircle(double circleRadius, int pointNumber) {
 		ArrayList<Point2D.Double> points = new ArrayList<>();
 		for (int i = 0; i < pointNumber; i++) {
-			double angle = TWICE_PI * i / pointNumber;
+			double angle = _MathCDT.TWICE_PI * i / pointNumber;
 			double x = circleRadius * Math.cos(angle);
 			double y = circleRadius * Math.sin(angle);
 			points.add(new Point2D.Double(x, y));
@@ -432,57 +432,6 @@ public class _Math extends _MathCDT {
 	}
 
 
-	public static class Arc {
-		public double[] getArcCenter(double xc, double yc, double r, double theta1, double theta2) {
-			theta1 = Math.toRadians(theta1); // 起始角度（弧度）
-			theta2 = Math.toRadians(theta2); // 终止角度（弧度）
-
-			// 计算扇形的中心角度
-			// double thetaMid = (theta1 + theta2) / 2;
-
-			// 扇形边缘上的两点坐标
-			double x1 = xc + r * Math.cos(theta1);
-			double y1 = yc + r * Math.sin(theta1);
-			double x2 = xc + r * Math.cos(theta2);
-			double y2 = yc + r * Math.sin(theta2);
-
-			// 计算中心点在扇形中心线上的位置的坐标
-			double centerX = (x1 + x2) / 2;
-			double centerY = (y1 + y2) / 2;
-
-			return new double[]{centerX, centerY};
-		}
-
-		protected double getArc(double angleDegrees, double radius) {
-			return (angleDegrees / 360.0) * (2 * PI * radius);
-		}
-
-		protected double[] getArcCenter(double radius, double theta, double alpha) {
-			double x1 = radius * Math.cos(theta);
-			double y1 = radius * Math.sin(theta);
-			double x2 = radius * Math.cos(theta + alpha);
-			double y2 = radius * Math.sin(theta + alpha);
-			double xm = (x1 + x2) / 2;
-			double ym = (y1 + y2) / 2;
-			double xc = xm + radius * Math.sin(alpha / 2) * Math.cos(theta + alpha / 2);
-			double yc = ym + radius * Math.sin(alpha / 2) * Math.sin(theta + alpha / 2);
-        /*
-        System.out.println("弧的起点坐标：(" + x1 + ", " + y1 + ")");
-        System.out.println("弧的中点坐标：(" + xm + ", " + ym + ")");
-        System.out.println("弧的终点坐标：(" + x2 + ", " + y2 + ")");
-        System.out.println("弧的中心点坐标：(" + xc + ", " + yc + ")");
-         */
-			return new double[]{xc, yc};
-		}
-
-		protected double getTextAngle(double b, double h) {
-			double tanTheta = (b / 2) / h;
-			double theta = Math.atan(tanTheta);
-			double degreesTheta = Math.toDegrees(theta);
-			return 180 - 2 * degreesTheta;
-		}
-	}
-
 	public static class RD {
 		private RD() {
 		}
@@ -523,7 +472,7 @@ public class _Math extends _MathCDT {
 	public static List<Point2D.Double> distributePoints(double circleRadius, int pointNumber, double rotationAngle) {
 		ArrayList<Point2D.Double> points = new ArrayList<>();
 		for (int i = 0; i < pointNumber; i++) {
-			double angle = rotationAngle + TWICE_PI * i / pointNumber;
+			double angle = rotationAngle + _MathCDT.TWICE_PI * i / pointNumber;
 			double x = circleRadius * Math.cos(angle);
 			double y = circleRadius * Math.sin(angle);
 			points.add(new Point2D.Double(x, y));

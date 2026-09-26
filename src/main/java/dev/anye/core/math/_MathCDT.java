@@ -1,9 +1,13 @@
 package dev.anye.core.math;
 
-public class _MathCDT {
-	public static int ETERNAL_CYCLE = 6174;
+public final class _MathCDT {
+	public static final int ETERNAL_CYCLE = 6174;
 	public static final double PI = 3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679;
+	public static final double HALF_PI = PI * 0.5;
 	public static final double TWICE_PI = 2 * PI;
+
+	private _MathCDT(){}
+/*
 	public static final double ARC = PI / 180;
 	public static final double ARC_360 = 2 * PI;
 	public static final double ARC_N360 = -ARC_360;
@@ -150,5 +154,5 @@ public class _MathCDT {
 	public static final double ARC_5 = 5.0 * ARC;
 	public static final double ARC_N5 = -ARC_5;
 	public static final double ARC_0 = 0.0;
-	public static final double ARC_N0 = 0.0;
+	public static final double ARC_N0 = 0.0;*/
 }
