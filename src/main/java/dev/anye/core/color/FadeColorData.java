@@ -1,6 +1,4 @@
-package dev.anye.core.dt;
-
-import dev.anye.core.color._ColorSupport;
+package dev.anye.core.color;
 
 /**
  * ↑ ↓ ← → ↖ ↗ ↘ ↙
@@ -16,7 +14,7 @@ public record FadeColorData(
 
 		int rightBottomColor,
 		int rightTopColor
-){
+) implements IFadeColor {
 	public static final FadeColorData EMPTY = new FadeColorData(0x00000000,0x00000000,0xffffffff, 0xffffffff);
 	/**
 	 * ( ← )
