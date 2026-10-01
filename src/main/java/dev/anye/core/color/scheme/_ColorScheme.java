@@ -29,6 +29,11 @@ public class _ColorScheme implements IColorScheme{
 		this.elementText = elementText;
 		this.elementBackground = elementBackground;
 	}
+	public _ColorScheme(
+			_StateColors border,_StateColors text, _StateColors background
+	){
+		this(border,text,background,border,text,background);
+	}
 
 	@Override
 	public IStateColor border() {
