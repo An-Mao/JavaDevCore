@@ -15,6 +15,9 @@ public record _StateColors(FadeColorData normal, FadeColorData hover, FadeColorD
 		this(usualColor, usualColor);
 	}
 	public _StateColors(int usualColor, int hoverColor) {
-		this(FadeColorData.create(usualColor), FadeColorData.create(hoverColor), FadeColorData.create(usualColor));
+		this(usualColor, hoverColor, usualColor);
+	}
+	public _StateColors(int usualColor, int hoverColor,int selectColor) {
+		this(FadeColorData.create(usualColor), FadeColorData.create(hoverColor), FadeColorData.create(selectColor));
 	}
 }
