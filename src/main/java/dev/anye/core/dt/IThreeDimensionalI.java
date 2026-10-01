@@ -6,7 +6,7 @@ package dev.anye.core.dt;
  * w,h,l
  *
  */
-public interface IThreeDimensionalI extends ITwoDimensional{
+public interface IThreeDimensionalI extends ITwoDimensionalI{
 	int z();
 	int l();
 	default int length(){return l();}

@@ -5,29 +5,51 @@ public final class _Arc {
 
 	/**
 	 * (Counter-clockwise)逆时针
+	 * <pre>
+	 *                   90°
+	 *                   ↑
+	 *                   |
+	 *                   |
+	 * 180° ←------------+------------→ 0°
+	 *                   |
+	 *                   |
+	 *                   ↓
+	 *                  270°
+	 * </pre>
 	 */
-	private static final double[] ARC_CC = new double[360];
+	private static final double[] ARC_CC = new double[361];
 	/**
 	 * Negative 逆时针 负值
 	 */
-	private static final double[] ARC_CC_N = new double[360];
+	private static final double[] ARC_CC_N = new double[361];
 
 	/**
 	 * Clockwise 顺时针
+	 * <pre>
+	 *                  270°
+	 *                   ↑
+	 *                   |
+	 *                   |
+	 * 180° ←------------+------------→ 0°
+	 *                   |
+	 *                   |
+	 *                   ↓
+	 *                   90°
+	 * </pre>
 	 */
-	private static final double[] ARC_C = new double[360];
+	private static final double[] ARC_C = new double[361];
 	/**
 	 *  顺时针 负值
 	 */
-	private static final double[] ARC_C_N = new double[360];
+	private static final double[] ARC_C_N = new double[361];
 	static {
-		for (int i = 0;i < 360; i++){
+		for (int i = 0;i < 361; i++){
 			double a = i * ARC;
 			ARC_CC[i] = a;
 			ARC_CC_N[i] = -a;
 
-			ARC_C[359 - i] = a;
-			ARC_C_N[359 - i] = -a;
+			ARC_C[360 - i] = a;
+			ARC_C_N[360 - i] = -a;
 		}
 	}
 	public _Arc(){}

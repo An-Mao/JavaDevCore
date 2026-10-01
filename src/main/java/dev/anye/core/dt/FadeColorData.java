@@ -1,5 +1,7 @@
 package dev.anye.core.dt;
 
+import dev.anye.core.color._ColorSupport;
+
 /**
  * ↑ ↓ ← → ↖ ↗ ↘ ↙
  * 假设默认颜色是左向右( → )
@@ -15,6 +17,7 @@ public record FadeColorData(
 		int rightBottomColor,
 		int rightTopColor
 ){
+	public static final FadeColorData EMPTY = new FadeColorData(0x00000000,0x00000000,0xffffffff, 0xffffffff);
 	/**
 	 * ( ← )
 	 * 将颜色左右镜像
@@ -25,7 +28,7 @@ public record FadeColorData(
 	 * </pre>
 	 * @return FadeColorData
 	 */
-	public FadeColorData lr(){
+	public FadeColorData right(){
 		return new FadeColorData(rightTopColor,rightBottomColor,
 				leftBottomColor,leftTopColor);
 	}
@@ -84,5 +87,35 @@ public record FadeColorData(
 	public FadeColorData dm(){
 		return new FadeColorData(rightBottomColor,rightTopColor,
 				leftTopColor,leftBottomColor);
+	}
+
+
+	public static FadeColorData withColor(int color, float intensity, boolean alpha) {
+		int c = _ColorSupport.fade(color, intensity, alpha);
+		int e = c & 0x00FFFFFF;
+		return new FadeColorData(c,c,e,e);
+	}
+
+	public static FadeColorData withColor(int color, float intensity) {
+		return withColor(color, intensity,false);
+	}
+
+	public static FadeColorData withColor(int color) {
+		return withColor(color, 2F);
+	}
+
+	public static FadeColorData create(int color){
+		return new FadeColorData(color,color,color,color);
+	}
+
+
+	@Override
+	public String toString() {
+		return "FadeColorData{" +
+				"leftTopColor=" + _ColorSupport.intToHexColor(leftTopColor) +
+				", leftBottomColor=" + _ColorSupport.intToHexColor(leftBottomColor) +
+				", rightBottomColor=" + _ColorSupport.intToHexColor(rightBottomColor) +
+				", rightTopColor=" + _ColorSupport.intToHexColor(rightTopColor) +
+				'}';
 	}
 }
