@@ -152,16 +152,6 @@ public abstract class _JsonConfigA<T> extends _JsonCore<T> {
 		return getDataOrDefault(defaultRawData);
 	}
 
-	protected T copyData(T source) {
-		if (source == null) {
-			return null;
-		}
-
-		return GSON.fromJson(
-				GSON.toJsonTree(source, type),
-				type
-		);
-	}
 
 	public void update(Consumer<T> action) {
 		synchronized (dataLock) {

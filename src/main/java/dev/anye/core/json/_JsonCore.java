@@ -21,7 +21,22 @@ public abstract class _JsonCore<T> {
 		this.type = type;
 	}
 
+	/**
+	 * 创建指定对象的深复制。
+	 *
+	 * @param source 源对象
+	 * @return 深复制对象
+	 */
+	protected T copyData(T source) {
+		if (source == null) {
+			return null;
+		}
 
+		return GSON.fromJson(
+				GSON.toJsonTree(source, type),
+				type
+		);
+	}
 
 
 	/**
